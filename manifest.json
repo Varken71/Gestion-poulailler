@@ -1,0 +1,17 @@
+{
+  "name": "Gestion du Poulailler",
+  "short_name": "Poulailler",
+  "description": "Suivi des pontes, ventes, clients, stock et rentabilité du poulailler",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fdf6ea",
+  "theme_color": "#e8a33d",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
