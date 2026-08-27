@@ -1,0 +1,1883 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Gestion du Poulailler</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#e8a33d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Poulailler">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fdf6ea;
+  --bg2:#fbead0;
+  --card:#ffffff;
+  --border:#ecdfc2;
+  --border2:#e0cc9d;
+  --text:#4a3728;
+  --text2:#8a715a;
+  --muted:#b8a482;
+  --accent:#e8a33d;
+  --accent-dark:#c9863f;
+  --accent2:#fdeecb;
+  --green:#4c8c4a;
+  --green2:#eaf4e9;
+  --red:#c0392b;
+  --red2:#fbebe9;
+  --blue:#3d78b0;
+  --blue2:#eaf2f9;
+  --r:12px;--r-sm:8px;--r-lg:18px;
+  --shadow:0 2px 10px rgba(90,60,20,0.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Nunito','Segoe UI',sans-serif;
+  min-height:100vh;-webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+input,select,textarea{
+  background:#fff;border:1.5px solid var(--border2);border-radius:var(--r-sm);
+  padding:8px 10px;outline:none;transition:border-color .15s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+button{cursor:pointer;border:none;border-radius:var(--r-sm);padding:9px 16px;font-weight:700}
+.btn{background:var(--accent);color:#fff;}
+.btn:hover{background:var(--accent-dark)}
+.btn-outline{background:#fff;border:1.5px solid var(--border2);color:var(--text)}
+.btn-outline:hover{border-color:var(--accent)}
+.btn-danger{background:var(--red2);color:var(--red)}
+.btn-danger:hover{background:var(--red);color:#fff}
+.btn-sm{padding:5px 10px;font-size:12.5px;border-radius:6px}
+a{color:var(--accent-dark)}
+
+/* header */
+#hdr{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:14px 20px;background:linear-gradient(180deg,#fff3da,#fbead0);
+  border-bottom:2px solid var(--border2);
+}
+#hdr .logo{font-size:28px;line-height:1}
+#hdr h1{font-size:19px;font-weight:800;letter-spacing:.01em}
+#hdr .sub{font-size:12px;color:var(--text2);font-weight:600}
+#hdr .spacer{flex:1}
+#installBtn{display:none}
+
+/* nav tabs */
+#nav{
+  display:flex;gap:4px;padding:10px 16px 0;overflow-x:auto;
+  background:var(--bg);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:20;
+}
+#nav.scrolled{background:var(--bg);box-shadow:var(--shadow)}
+.tab-btn{
+  background:transparent;color:var(--text2);font-weight:700;font-size:13.5px;
+  padding:10px 14px;border-radius:var(--r-sm) var(--r-sm) 0 0;white-space:nowrap;
+  border-bottom:3px solid transparent;
+}
+.tab-btn.active{color:var(--accent-dark);border-bottom-color:var(--accent);background:var(--card)}
+.tab-btn:hover:not(.active){color:var(--text)}
+
+main{max-width:1180px;margin:0 auto;padding:18px 16px 60px}
+.view{display:none;animation:fadein .18s ease}
+.view.active{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;box-shadow:var(--shadow)}
+.card + .card{margin-top:16px}
+.card h2{font-size:15px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h2 .hint{font-weight:600;font-size:12px;color:var(--muted);margin-left:auto}
+
+/* KPI grid */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;box-shadow:var(--shadow)}
+.kpi .lbl{font-size:11.5px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.kpi .val{font-size:24px;font-weight:800;margin-top:4px}
+.kpi .val.orange{color:var(--accent-dark)}
+.kpi .val.green{color:var(--green)}
+.kpi .val.blue{color:var(--blue)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:800px){.grid2{grid-template-columns:1fr}}
+
+/* forms */
+.form-row{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.field{display:flex;flex-direction:column;gap:4px;min-width:110px}
+.field label{font-size:11.5px;font-weight:700;color:var(--text2)}
+.field.grow{flex:1}
+.form-actions{margin-left:auto;display:flex;gap:8px}
+
+/* tables */
+.table-wrap{overflow-x:auto;border-radius:var(--r-sm)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:640px}
+thead th{
+  text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--text2);font-weight:800;padding:8px 10px;border-bottom:2px solid var(--border2);
+  white-space:nowrap;position:sticky;top:0;background:var(--card);
+}
+tbody td{padding:9px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+tbody tr:hover{background:var(--accent2)}
+tbody tr:last-child td{border-bottom:none}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.tag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.tag-active{background:var(--green2);color:var(--green)}
+.tag-retiree{background:#f1ecdd;color:var(--text2)}
+.tag-decedee{background:var(--red2);color:var(--red)}
+.rank1{color:#b8860b;font-weight:800}
+.empty-row td{text-align:center;color:var(--muted);padding:22px;font-style:italic}
+.row-actions{display:flex;gap:6px}
+
+/* filters bar */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:end}
+
+/* charts */
+canvas.chart{width:100%;height:230px;display:block}
+
+.footer-note{color:var(--muted);font-size:12px;margin-top:10px;line-height:1.5}
+.toast{
+  position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--text);color:#fff;padding:10px 18px;border-radius:30px;font-weight:700;font-size:13px;
+  opacity:0;pointer-events:none;transition:all .25s;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.2);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.badge-count{background:var(--accent2);color:var(--accent-dark);border-radius:20px;padding:1px 8px;font-size:11px;margin-left:5px}
+.warn-inline{color:var(--red);font-size:12px;font-weight:700;margin-top:4px}
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <div class="logo">🐔</div>
+  <div>
+    <h1>Gestion du Poulailler</h1>
+    <div class="sub">Poules · Pontes · Ventes · Clients · Stock · Rentabilité</div>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn-outline" id="installBtn">📲 Installer</button>
+</header>
+
+<nav id="nav">
+  <button class="tab-btn active" data-tab="dashboard">📊 Tableau de bord</button>
+  <button class="tab-btn" data-tab="poules">🐔 Poules</button>
+  <button class="tab-btn" data-tab="pontes">🥚 Pontes</button>
+  <button class="tab-btn" data-tab="ventes">💶 Ventes</button>
+  <button class="tab-btn" data-tab="clients">👥 Clients</button>
+  <button class="tab-btn" data-tab="stock">📦 Stock</button>
+  <button class="tab-btn" data-tab="couts">💸 Coûts</button>
+  <button class="tab-btn" data-tab="conso">🏠 Consommation</button>
+  <button class="tab-btn" data-tab="investissements">🔧 Investissements</button>
+  <button class="tab-btn" data-tab="backup">💾 Sauvegarde</button>
+</nav>
+
+<main>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section class="view active" id="view-dashboard">
+    <div class="kpis" id="kpiGrid"></div>
+
+    <div class="card">
+      <h2>💰 Rentabilité du cheptel <span class="hint">valeur créée = ventes + économies − coûts</span></h2>
+      <div class="kpis" id="kpiRentaGrid"></div>
+    </div>
+
+    <div class="card">
+      <h2>🔎 Analyse sur une période</h2>
+      <div class="form-row">
+        <div class="field">
+          <label>Date début</label>
+          <input type="date" id="periodStart">
+        </div>
+        <div class="field">
+          <label>Date fin</label>
+          <input type="date" id="periodEnd">
+        </div>
+        <button class="btn-outline btn-sm" id="periodReset">Réinitialiser</button>
+      </div>
+      <div class="kpis" style="margin-top:14px" id="periodKpis"></div>
+    </div>
+
+    <div class="grid2" style="margin-top:16px">
+      <div class="card">
+        <h2>📈 Pontes vs Ventes par mois <span class="hint" id="chartYearLabel1"></span>
+          <select id="chartYear1" style="margin-left:8px"></select>
+        </h2>
+        <canvas class="chart" id="chartPontesVentes"></canvas>
+      </div>
+      <div class="card">
+        <h2>💶 Chiffre d'affaires par mois
+          <select id="chartYear2" style="margin-left:8px"></select>
+        </h2>
+        <canvas class="chart" id="chartCA"></canvas>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>📅 Bilan économique annuel</h2>
+      <div class="table-wrap"><table id="bilanTable">
+        <thead><tr>
+          <th>Année</th><th class="num">CA ventes</th><th class="num">Coûts</th><th class="num">Économies</th>
+          <th class="num">Bénéfice</th><th class="num">Valeur créée</th><th class="num">Investissements</th><th class="num">Solde cumulé</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>ℹ️ Mode d'emploi rapide</h2>
+      <div class="footer-note">
+        1. Renseigne tes poules et leur race dans l'onglet <b>Poules</b>.<br>
+        2. À chaque ponte, ajoute une ligne dans <b>Pontes</b> : date, race/poule et quantité.<br>
+        3. À chaque vente, ajoute une ligne dans <b>Ventes</b> : date, client, quantité et prix par œuf.<br>
+        4. Le <b>stock</b> se calcule automatiquement (pontes − ventes − consommation) et chaque vente ou consommation le déduit aussitôt.<br>
+        5. L'onglet <b>Clients</b> classe automatiquement les acheteurs par quantité et chiffre d'affaires.<br>
+        6. Renseigne tes dépenses dans <b>Coûts</b> et tes investissements matériel dans <b>Investissements</b>.<br>
+        7. L'onglet <b>Consommation</b> te permet de retirer du stock les œufs que tu manges toi-même, en valorisant l'économie réalisée.<br>
+        8. Le tableau de bord calcule automatiquement ton <b>bénéfice</b>, tes <b>économies</b> et ta <b>rentabilité</b> globale.<br>
+        9. Pense à faire une <b>sauvegarde</b> régulière (export) : toutes les données restent uniquement sur cet appareil.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ POULES ============ -->
+  <section class="view" id="view-poules">
+    <div class="card">
+      <h2 id="pouleFormTitle">➕ Ajouter une poule</h2>
+      <form id="pouleForm">
+        <input type="hidden" id="pouleId">
+        <div class="form-row">
+          <div class="field grow"><label>Nom / repère *</label><input type="text" id="pouleNom" required placeholder="Ex : Blanchette"></div>
+          <div class="field grow"><label>Race</label><input type="text" id="pouleRace" list="raceList" placeholder="Ex : Sussex"></div>
+          <div class="field"><label>Date d'arrivée</label><input type="date" id="pouleDateArrivee"></div>
+          <div class="field"><label>Date de naissance</label><input type="date" id="pouleDateNaissance"></div>
+          <div class="field"><label>Prix d'achat (€)</label><input type="number" id="pouleuPrixAchat" step="0.01" min="0"></div>
+          <div class="field"><label>Statut</label>
+            <select id="pouleStatut">
+              <option>Active</option><option>Retirée</option><option>Décédée</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-outline btn-sm" id="pouleCancelBtn" style="display:none">Annuler</button>
+            <button type="submit" class="btn" id="pouleSubmitBtn">Ajouter</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>🐔 Liste des poules <span class="hint" id="poulesCount"></span></h2>
+      <div class="filters">
+        <div class="field"><label>Statut</label>
+          <select id="pouleFilterStatut"><option value="">Tous</option><option>Active</option><option>Retirée</option><option>Décédée</option></select>
+        </div>
+      </div>
+      <div class="footer-note" style="margin-bottom:10px">Les ventes sont enregistrées par race (onglet Ventes/Stock) : le détail par poule ci-dessous ne montre que sa production d'œufs.</div>
+      <div class="table-wrap"><table id="poulesTable">
+        <thead><tr>
+          <th>Nom / repère</th><th>Race</th><th>Arrivée</th><th>Statut</th>
+          <th class="num">Œufs pondus</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ============ PONTES ============ -->
+  <section class="view" id="view-pontes">
+    <div class="card">
+      <h2 id="ponteFormTitle">➕ Enregistrer une ponte</h2>
+      <form id="ponteForm">
+        <input type="hidden" id="ponteId">
+        <div class="form-row">
+          <div class="field"><label>Date *</label><input type="date" id="ponteDate" required></div>
+          <div class="field"><label>Race</label><input type="text" id="ponteRace" list="raceList"></div>
+          <div class="field"><label>Poule / repère</label><input type="text" id="pontePoule" list="pouleList"></div>
+          <div class="field"><label>Quantité d'œufs *</label><input type="number" id="ponteQuantite" min="0" step="1" required></div>
+          <div class="field grow"><label>Commentaire</label><input type="text" id="ponteCommentaire"></div>
+          <div class="form-actions">
+            <button type="button" class="btn-outline btn-sm" id="ponteCancelBtn" style="display:none">Annuler</button>
+            <button type="submit" class="btn" id="ponteSubmitBtn">Ajouter</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>🥚 Historique des pontes <span class="hint" id="pontesCount"></span></h2>
+      <div class="filters">
+        <div class="field"><label>Année</label><select id="ponteFilterYear"><option value="">Toutes</option></select></div>
+        <div class="field"><label>Race</label><select id="ponteFilterRace"><option value="">Toutes</option></select></div>
+        <div class="field"><label>Du</label><input type="date" id="ponteFilterFrom"></div>
+        <div class="field"><label>Au</label><input type="date" id="ponteFilterTo"></div>
+        <button class="btn-outline btn-sm" id="ponteFilterReset">Réinitialiser</button>
+      </div>
+      <div class="table-wrap"><table id="pontesTable">
+        <thead><tr>
+          <th>Date</th><th>Année</th><th>Mois</th><th>Race</th><th>Poule</th>
+          <th class="num">Quantité</th><th>Commentaire</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ============ VENTES ============ -->
+  <section class="view" id="view-ventes">
+    <div class="card">
+      <h2 id="venteFormTitle">➕ Enregistrer une vente</h2>
+      <form id="venteForm">
+        <input type="hidden" id="venteId">
+        <div class="form-row">
+          <div class="field"><label>Date *</label><input type="date" id="venteDate" required></div>
+          <div class="field grow"><label>Client *</label><input type="text" id="venteClient" list="clientList" required></div>
+          <div class="field"><label>Race</label><input type="text" id="venteRace" list="raceList"></div>
+          <div class="field"><label>Quantité d'œufs *</label><input type="number" id="venteQuantite" min="0" step="1" required></div>
+          <div class="field"><label>Prix / œuf (€) *</label><input type="number" id="ventePrix" min="0" step="0.01" required></div>
+          <div class="field"><label>Paiement</label>
+            <select id="ventePaiement"><option>Espèces</option><option>Virement</option><option>Autre</option></select>
+          </div>
+          <div class="field grow"><label>Commentaire</label><input type="text" id="venteCommentaire"></div>
+          <div class="form-actions">
+            <button type="button" class="btn-outline btn-sm" id="venteCancelBtn" style="display:none">Annuler</button>
+            <button type="submit" class="btn" id="venteSubmitBtn">Ajouter</button>
+          </div>
+        </div>
+        <div class="warn-inline" id="venteStockWarn" style="display:none"></div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>💶 Historique des ventes <span class="hint" id="ventesCount"></span></h2>
+      <div class="filters">
+        <div class="field"><label>Année</label><select id="venteFilterYear"><option value="">Toutes</option></select></div>
+        <div class="field"><label>Client</label><select id="venteFilterClient"><option value="">Tous</option></select></div>
+        <div class="field"><label>Race</label><select id="venteFilterRace"><option value="">Toutes</option></select></div>
+        <div class="field"><label>Du</label><input type="date" id="venteFilterFrom"></div>
+        <div class="field"><label>Au</label><input type="date" id="venteFilterTo"></div>
+        <button class="btn-outline btn-sm" id="venteFilterReset">Réinitialiser</button>
+      </div>
+      <div class="table-wrap"><table id="ventesTable">
+        <thead><tr>
+          <th>N°</th><th>Date</th><th>Client</th><th>Race</th><th class="num">Qté</th>
+          <th class="num">Prix/œuf</th><th class="num">Total</th><th>Paiement</th><th>Commentaire</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ============ CLIENTS ============ -->
+  <section class="view" id="view-clients">
+    <div class="card">
+      <h2>👥 Classement des clients <span class="hint" id="clientsCount"></span></h2>
+      <div class="footer-note" style="margin-bottom:10px">Le classement se calcule automatiquement à partir des ventes enregistrées — aucune saisie nécessaire ici.</div>
+      <div class="table-wrap"><table id="clientsTable">
+        <thead><tr>
+          <th>Rang</th><th>Client</th><th class="num">Œufs achetés</th><th class="num">Nb ventes</th>
+          <th class="num">CA total (€)</th><th class="num">Prix moyen (€)</th><th>Dernière vente</th><th class="num">Part du CA</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ============ STOCK ============ -->
+  <section class="view" id="view-stock">
+    <div class="card">
+      <h2>📦 Stock des œufs par race <span class="hint" id="stockCount"></span></h2>
+      <div class="footer-note" style="margin-bottom:10px">Renseigne un prix de vente par race pour estimer la valeur du stock disponible. Le stock disponible tient compte des ventes ET de la consommation personnelle.</div>
+      <div class="table-wrap"><table id="stockTable">
+        <thead><tr>
+          <th>Race</th><th class="num">Œufs pondus</th><th class="num">Œufs vendus</th><th class="num">Œufs consommés</th><th class="num">Stock disponible</th>
+          <th class="num">Prix vente/œuf (€)</th><th class="num">Valeur du stock (€)</th><th>Dernière ponte</th><th>Dernière vente</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ============ COÛTS ============ -->
+  <section class="view" id="view-couts">
+    <div class="card">
+      <h2 id="coutFormTitle">➕ Enregistrer un coût</h2>
+      <form id="coutForm">
+        <input type="hidden" id="coutId">
+        <div class="form-row">
+          <div class="field"><label>Date *</label><input type="date" id="coutDate" required></div>
+          <div class="field"><label>Catégorie</label>
+            <select id="coutCategorie">
+              <option>Nourriture</option><option>Vétérinaire</option><option>Paille</option><option>Litière</option>
+              <option>Médicaments</option><option>Matériel</option><option>Eau/Électricité</option><option>Autre</option>
+            </select>
+          </div>
+          <div class="field"><label>Montant (€) *</label><input type="number" id="coutMontant" min="0" step="0.01" required></div>
+          <div class="field grow"><label>Commentaire</label><input type="text" id="coutCommentaire"></div>
+          <div class="form-actions">
+            <button type="button" class="btn-outline btn-sm" id="coutCancelBtn" style="display:none">Annuler</button>
+            <button type="submit" class="btn" id="coutSubmitBtn">Ajouter</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>💸 Historique des coûts <span class="hint" id="coutsCount"></span></h2>
+      <div class="filters">
+        <div class="field"><label>Année</label><select id="coutFilterYear"><option value="">Toutes</option></select></div>
+        <div class="field"><label>Catégorie</label>
+          <select id="coutFilterCategorie"><option value="">Toutes</option>
+            <option>Nourriture</option><option>Vétérinaire</option><option>Paille</option><option>Litière</option>
+            <option>Médicaments</option><option>Matériel</option><option>Eau/Électricité</option><option>Autre</option>
+          </select>
+        </div>
+        <div class="field"><label>Du</label><input type="date" id="coutFilterFrom"></div>
+        <div class="field"><label>Au</label><input type="date" id="coutFilterTo"></div>
+        <button class="btn-outline btn-sm" id="coutFilterReset">Réinitialiser</button>
+      </div>
+      <div class="table-wrap"><table id="coutsTable">
+        <thead><tr><th>Date</th><th>Catégorie</th><th class="num">Montant</th><th>Commentaire</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ============ CONSOMMATION PERSONNELLE ============ -->
+  <section class="view" id="view-conso">
+    <div class="card">
+      <h2 id="consoFormTitle">➕ Enregistrer une consommation</h2>
+      <form id="consoForm">
+        <input type="hidden" id="consoId">
+        <div class="form-row">
+          <div class="field"><label>Date *</label><input type="date" id="consoDate" required></div>
+          <div class="field"><label>Race</label><input type="text" id="consoRace" list="raceList"></div>
+          <div class="field"><label>Quantité consommée *</label><input type="number" id="consoQuantite" min="0" step="1" required></div>
+          <div class="field"><label>Prix estimatif/œuf (€) *</label><input type="number" id="consoPrix" min="0" step="0.01" required></div>
+          <div class="field grow"><label>Commentaire</label><input type="text" id="consoCommentaire"></div>
+          <div class="form-actions">
+            <button type="button" class="btn-outline btn-sm" id="consoCancelBtn" style="display:none">Annuler</button>
+            <button type="submit" class="btn" id="consoSubmitBtn">Ajouter</button>
+          </div>
+        </div>
+        <div class="footer-note" id="consoEconomiePreview"></div>
+        <div class="warn-inline" id="consoStockWarn" style="display:none"></div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>🏠 Historique de consommation personnelle <span class="hint" id="consosCount"></span></h2>
+      <div class="footer-note" style="margin-bottom:10px">Les œufs consommés sont retirés du stock, comme une vente, mais sans mouvement d'argent réel — l'économie réalisée est estimée avec le prix indiqué.</div>
+      <div class="filters">
+        <div class="field"><label>Année</label><select id="consoFilterYear"><option value="">Toutes</option></select></div>
+        <div class="field"><label>Race</label><select id="consoFilterRace"><option value="">Toutes</option></select></div>
+        <div class="field"><label>Du</label><input type="date" id="consoFilterFrom"></div>
+        <div class="field"><label>Au</label><input type="date" id="consoFilterTo"></div>
+        <button class="btn-outline btn-sm" id="consoFilterReset">Réinitialiser</button>
+      </div>
+      <div class="table-wrap"><table id="consosTable">
+        <thead><tr>
+          <th>Date</th><th>Race</th><th class="num">Quantité</th><th class="num">Prix estimé</th>
+          <th class="num">Économie</th><th>Commentaire</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ============ INVESTISSEMENTS ============ -->
+  <section class="view" id="view-investissements">
+    <div class="card">
+      <h2 id="investFormTitle">➕ Enregistrer un investissement</h2>
+      <form id="investForm">
+        <input type="hidden" id="investId">
+        <div class="form-row">
+          <div class="field"><label>Date *</label><input type="date" id="investDate" required></div>
+          <div class="field"><label>Catégorie</label>
+            <select id="investCategorie">
+              <option>Poulailler</option><option>Clôtures</option><option>Mangeoires</option><option>Abreuvoirs</option>
+              <option>Matériel</option><option>Autre</option>
+            </select>
+          </div>
+          <div class="field grow"><label>Désignation</label><input type="text" id="investLibelle" placeholder="Ex : Poulailler 6 places"></div>
+          <div class="field"><label>Montant (€) *</label><input type="number" id="investMontant" min="0" step="0.01" required></div>
+          <div class="field grow"><label>Commentaire</label><input type="text" id="investCommentaire"></div>
+          <div class="form-actions">
+            <button type="button" class="btn-outline btn-sm" id="investCancelBtn" style="display:none">Annuler</button>
+            <button type="submit" class="btn" id="investSubmitBtn">Ajouter</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>🔧 Historique des investissements <span class="hint" id="investsCount"></span></h2>
+      <div class="filters">
+        <div class="field"><label>Année</label><select id="investFilterYear"><option value="">Toutes</option></select></div>
+        <div class="field"><label>Catégorie</label>
+          <select id="investFilterCategorie"><option value="">Toutes</option>
+            <option>Poulailler</option><option>Clôtures</option><option>Mangeoires</option><option>Abreuvoirs</option>
+            <option>Matériel</option><option>Autre</option>
+          </select>
+        </div>
+        <button class="btn-outline btn-sm" id="investFilterReset">Réinitialiser</button>
+      </div>
+      <div class="table-wrap"><table id="investsTable">
+        <thead><tr><th>Date</th><th>Catégorie</th><th>Désignation</th><th class="num">Montant</th><th>Commentaire</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ============ BACKUP ============ -->
+  <section class="view" id="view-backup">
+    <div class="card">
+      <h2>💾 Sauvegarde &amp; restauration</h2>
+      <div class="footer-note">
+        Toutes les données sont stockées uniquement sur cet appareil (localStorage du navigateur).
+        Exporte régulièrement une sauvegarde pour ne rien perdre, notamment avant de changer de téléphone/ordinateur ou de vider le cache du navigateur.
+      </div>
+      <div class="form-row" style="margin-top:14px">
+        <button class="btn" id="exportBtn">⬇️ Exporter la sauvegarde (JSON)</button>
+        <button class="btn-outline" id="importBtn">⬆️ Importer une sauvegarde</button>
+        <input type="file" id="importFile" accept="application/json" style="display:none">
+      </div>
+      <div class="form-row" style="margin-top:10px">
+        <button class="btn-outline" id="exportCsvPontes">Exporter Pontes (CSV)</button>
+        <button class="btn-outline" id="exportCsvVentes">Exporter Ventes (CSV)</button>
+        <button class="btn-outline" id="exportCsvCouts">Exporter Coûts (CSV)</button>
+        <button class="btn-outline" id="exportCsvConso">Exporter Consommation (CSV)</button>
+        <button class="btn-outline" id="exportCsvInvest">Exporter Investissements (CSV)</button>
+      </div>
+      <div class="form-row" style="margin-top:22px">
+        <button class="btn-danger" id="resetBtn">🗑️ Réinitialiser toutes les données</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<datalist id="raceList"></datalist>
+<datalist id="pouleList"></datalist>
+<datalist id="clientList"></datalist>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+/* ==================== STATE ==================== */
+const STORAGE_KEY = 'poulailler_state_v1';
+const STATUTS = ['Active','Retirée','Décédée'];
+const PAIEMENTS = ['Espèces','Virement','Autre'];
+const MOIS_FR = ['Janv','Févr','Mars','Avr','Mai','Juin','Juil','Août','Sept','Oct','Nov','Déc'];
+const CATEGORIES_COUT = ['Nourriture','Vétérinaire','Paille','Litière','Médicaments','Matériel','Eau/Électricité','Autre'];
+const CATEGORIES_INVEST = ['Poulailler','Clôtures','Mangeoires','Abreuvoirs','Matériel','Autre'];
+
+function defaultState(){
+  return {
+    poules: [], pontes: [], ventes: [], stockPrix: {}, nextVenteNumero: 1,
+    couts: [], consommations: [], investissements: []
+  };
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultState();
+    const s = JSON.parse(raw);
+    return Object.assign(defaultState(), s);
+  }catch(e){
+    console.error('Erreur de chargement', e);
+    return defaultState();
+  }
+}
+let state = loadState();
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+function uid(){
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+}
+
+/* ==================== HELPERS ==================== */
+function fmtNum(n){
+  n = Number(n)||0;
+  return n.toLocaleString('fr-FR');
+}
+function fmtEur(n){
+  n = Number(n)||0;
+  return n.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+}
+function fmtDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso+'T00:00:00');
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString('fr-FR');
+}
+function todayISO(){
+  return new Date().toISOString().slice(0,10);
+}
+function escapeHtml(s){
+  return String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function uniqueSorted(arr){
+  return [...new Set(arr.filter(v => v && String(v).trim()))].sort((a,b)=>a.localeCompare(b,'fr'));
+}
+
+/* ==================== DERIVED DATA ==================== */
+function allRaces(){
+  return uniqueSorted([
+    ...state.poules.map(p=>p.race),
+    ...state.pontes.map(p=>p.race),
+    ...state.ventes.map(v=>v.race)
+  ]);
+}
+function allPouleNames(){
+  return uniqueSorted(state.poules.map(p=>p.nom));
+}
+function allClientNames(){
+  return uniqueSorted(state.ventes.map(v=>v.client));
+}
+function venteTotal(v){
+  return (Number(v.quantite)||0) * (Number(v.prix)||0);
+}
+function consoEconomie(c){
+  return (Number(c.quantite)||0) * (Number(c.prix)||0);
+}
+function totals(){
+  const pondus = state.pontes.reduce((s,p)=>s+(Number(p.quantite)||0),0);
+  const vendus = state.ventes.reduce((s,v)=>s+(Number(v.quantite)||0),0);
+  const consommes = state.consommations.reduce((s,c)=>s+(Number(c.quantite)||0),0);
+  const ca = state.ventes.reduce((s,v)=>s+venteTotal(v),0);
+  const clients = allClientNames().length;
+  return { pondus, vendus, consommes, stock: pondus - vendus - consommes, ca, clients };
+}
+function totalsInRange(from, to){
+  const inRange = (d) => (!from || d >= from) && (!to || d <= to);
+  const pondus = state.pontes.filter(p=>p.date && inRange(p.date)).reduce((s,p)=>s+(Number(p.quantite)||0),0);
+  const ventesR = state.ventes.filter(v=>v.date && inRange(v.date));
+  const vendus = ventesR.reduce((s,v)=>s+(Number(v.quantite)||0),0);
+  const ca = ventesR.reduce((s,v)=>s+venteTotal(v),0);
+  const couts = state.couts.filter(c=>c.date && inRange(c.date)).reduce((s,c)=>s+(Number(c.montant)||0),0);
+  const economies = state.consommations.filter(c=>c.date && inRange(c.date)).reduce((s,c)=>s+consoEconomie(c),0);
+  const benefice = ca - couts;
+  return { pondus, vendus, ca, couts, economies, benefice };
+}
+function totalCouts(){ return state.couts.reduce((s,c)=>s+(Number(c.montant)||0),0); }
+function totalEconomies(){ return state.consommations.reduce((s,c)=>s+consoEconomie(c),0); }
+function totalInvestissements(){ return state.investissements.reduce((s,i)=>s+(Number(i.montant)||0),0); }
+function beneficeVentes(ca, couts){ return ca - couts; }
+function valeurCreee(ca, economies, couts){ return ca + economies - couts; }
+function rentabilite(){
+  const t = totals();
+  const couts = totalCouts();
+  const economies = totalEconomies();
+  const invest = totalInvestissements();
+  const benefice = beneficeVentes(t.ca, couts);
+  const valeur = valeurCreee(t.ca, economies, couts);
+  const solde = valeur - invest;
+  const taux = invest > 0 ? (valeur / invest) * 100 : null;
+  return { couts, economies, invest, benefice, valeur, solde, taux };
+}
+function stockParRace(){
+  const races = allRaces();
+  return races.map(race => {
+    const pontesR = state.pontes.filter(p=>p.race===race);
+    const ventesR = state.ventes.filter(v=>v.race===race);
+    const consosR = state.consommations.filter(c=>c.race===race);
+    const pondus = pontesR.reduce((s,p)=>s+(Number(p.quantite)||0),0);
+    const vendus = ventesR.reduce((s,v)=>s+(Number(v.quantite)||0),0);
+    const consommes = consosR.reduce((s,c)=>s+(Number(c.quantite)||0),0);
+    const dernierePonte = pontesR.map(p=>p.date).filter(Boolean).sort().pop() || '';
+    const derniereVente = ventesR.map(v=>v.date).filter(Boolean).sort().pop() || '';
+    const prixVente = state.stockPrix[race] ?? '';
+    const disponible = pondus - vendus - consommes;
+    const valeur = prixVente!=='' ? disponible * Number(prixVente) : null;
+    return { race, pondus, vendus, consommes, disponible, prixVente, valeur, dernierePonte, derniereVente };
+  });
+}
+function stockDisponiblePourRace(race){
+  if(!race) return null;
+  const pontesR = state.pontes.filter(p=>p.race===race).reduce((s,p)=>s+(Number(p.quantite)||0),0);
+  const ventesR = state.ventes.filter(v=>v.race===race).reduce((s,v)=>s+(Number(v.quantite)||0),0);
+  const consosR = state.consommations.filter(c=>c.race===race).reduce((s,c)=>s+(Number(c.quantite)||0),0);
+  return pontesR - ventesR - consosR;
+}
+function annualBilan(){
+  const years = availableYears().slice().sort((a,b)=>a-b);
+  let cumule = 0;
+  const rows = years.map(year=>{
+    const inYear = (d) => d && new Date(d+'T00:00:00').getFullYear()===year;
+    const ca = state.ventes.filter(v=>inYear(v.date)).reduce((s,v)=>s+venteTotal(v),0);
+    const couts = state.couts.filter(c=>inYear(c.date)).reduce((s,c)=>s+(Number(c.montant)||0),0);
+    const economies = state.consommations.filter(c=>inYear(c.date)).reduce((s,c)=>s+consoEconomie(c),0);
+    const invest = state.investissements.filter(i=>inYear(i.date)).reduce((s,i)=>s+(Number(i.montant)||0),0);
+    const benefice = beneficeVentes(ca, couts);
+    const valeur = valeurCreee(ca, economies, couts);
+    cumule += valeur - invest;
+    return { year, ca, couts, economies, benefice, valeur, invest, soldeCumule: cumule };
+  });
+  return rows.reverse();
+}
+function clientsRanking(){
+  const names = allClientNames();
+  const totalCA = state.ventes.reduce((s,v)=>s+venteTotal(v),0);
+  const rows = names.map(name => {
+    const ventesC = state.ventes.filter(v=>v.client===name);
+    const achats = ventesC.reduce((s,v)=>s+(Number(v.quantite)||0),0);
+    const ca = ventesC.reduce((s,v)=>s+venteTotal(v),0);
+    const nb = ventesC.length;
+    const prixMoyen = achats ? ca/achats : 0;
+    const derniereVente = ventesC.map(v=>v.date).filter(Boolean).sort().pop() || '';
+    const partCA = totalCA ? ca/totalCA : 0;
+    return { name, achats, nb, ca, prixMoyen, derniereVente, partCA };
+  });
+  rows.sort((a,b)=> b.achats - a.achats);
+  rows.forEach((r,i)=> r.rang = i+1);
+  return rows;
+}
+function pouleStats(poule){
+  const pondus = state.pontes.filter(p=>p.poule===poule.nom).reduce((s,p)=>s+(Number(p.quantite)||0),0);
+  return { pondus };
+}
+function monthlyAgg(year){
+  const pontesM = Array(12).fill(0);
+  const ventesM = Array(12).fill(0);
+  const caM = Array(12).fill(0);
+  state.pontes.forEach(p=>{
+    if(!p.date) return;
+    const d = new Date(p.date+'T00:00:00');
+    if(d.getFullYear()===year) pontesM[d.getMonth()] += Number(p.quantite)||0;
+  });
+  state.ventes.forEach(v=>{
+    if(!v.date) return;
+    const d = new Date(v.date+'T00:00:00');
+    if(d.getFullYear()===year){
+      ventesM[d.getMonth()] += Number(v.quantite)||0;
+      caM[d.getMonth()] += venteTotal(v);
+    }
+  });
+  return { pontesM, ventesM, caM };
+}
+function availableYears(){
+  const ys = new Set();
+  state.pontes.forEach(p=>{ if(p.date) ys.add(new Date(p.date+'T00:00:00').getFullYear()); });
+  state.ventes.forEach(v=>{ if(v.date) ys.add(new Date(v.date+'T00:00:00').getFullYear()); });
+  state.couts.forEach(c=>{ if(c.date) ys.add(new Date(c.date+'T00:00:00').getFullYear()); });
+  state.consommations.forEach(c=>{ if(c.date) ys.add(new Date(c.date+'T00:00:00').getFullYear()); });
+  state.investissements.forEach(i=>{ if(i.date) ys.add(new Date(i.date+'T00:00:00').getFullYear()); });
+  ys.add(new Date().getFullYear());
+  return [...ys].sort((a,b)=>b-a);
+}
+
+/* ==================== TABS ==================== */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-'+btn.dataset.tab).classList.add('active');
+    renderAll();
+  });
+});
+window.addEventListener('scroll', ()=>{
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 4);
+});
+
+/* ==================== DATALISTS ==================== */
+function renderDatalists(){
+  document.getElementById('raceList').innerHTML = allRaces().map(r=>`<option value="${escapeHtml(r)}">`).join('');
+  document.getElementById('pouleList').innerHTML = allPouleNames().map(r=>`<option value="${escapeHtml(r)}">`).join('');
+  document.getElementById('clientList').innerHTML = allClientNames().map(r=>`<option value="${escapeHtml(r)}">`).join('');
+}
+
+/* ==================== DASHBOARD ==================== */
+function renderDashboard(){
+  const t = totals();
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi"><div class="lbl">Œufs pondus</div><div class="val orange">${fmtNum(t.pondus)}</div></div>
+    <div class="kpi"><div class="lbl">Œufs vendus</div><div class="val blue">${fmtNum(t.vendus)}</div></div>
+    <div class="kpi"><div class="lbl">Œufs consommés</div><div class="val blue">${fmtNum(t.consommes)}</div></div>
+    <div class="kpi"><div class="lbl">Stock actuel</div><div class="val green">${fmtNum(t.stock)}</div></div>
+    <div class="kpi"><div class="lbl">Chiffre d'affaires</div><div class="val orange">${fmtEur(t.ca)}</div></div>
+    <div class="kpi"><div class="lbl">Nombre de clients</div><div class="val blue">${fmtNum(t.clients)}</div></div>
+  `;
+
+  const r = rentabilite();
+  document.getElementById('kpiRentaGrid').innerHTML = `
+    <div class="kpi"><div class="lbl">Coûts du cheptel</div><div class="val" style="color:var(--red)">${fmtEur(r.couts)}</div></div>
+    <div class="kpi"><div class="lbl">Économies réalisées</div><div class="val green">${fmtEur(r.economies)}</div></div>
+    <div class="kpi"><div class="lbl">Bénéfice (ventes)</div><div class="val ${r.benefice>=0?'green':''}" style="${r.benefice<0?'color:var(--red)':''}">${fmtEur(r.benefice)}</div></div>
+    <div class="kpi"><div class="lbl">Valeur créée</div><div class="val orange">${fmtEur(r.valeur)}</div></div>
+    <div class="kpi"><div class="lbl">Investissements matériel</div><div class="val blue">${fmtEur(r.invest)}</div></div>
+    <div class="kpi"><div class="lbl">Solde de rentabilité</div><div class="val ${r.solde>=0?'green':''}" style="${r.solde<0?'color:var(--red)':''}">${fmtEur(r.solde)}</div></div>
+    <div class="kpi"><div class="lbl">Taux de rentabilité</div><div class="val orange">${r.taux===null?'—':r.taux.toLocaleString('fr-FR',{maximumFractionDigits:1})+'%'}</div></div>
+  `;
+
+  const from = document.getElementById('periodStart').value;
+  const to = document.getElementById('periodEnd').value;
+  const tp = totalsInRange(from, to);
+  document.getElementById('periodKpis').innerHTML = `
+    <div class="kpi"><div class="lbl">Œufs pondus / période</div><div class="val orange">${fmtNum(tp.pondus)}</div></div>
+    <div class="kpi"><div class="lbl">Œufs vendus / période</div><div class="val blue">${fmtNum(tp.vendus)}</div></div>
+    <div class="kpi"><div class="lbl">CA / période</div><div class="val green">${fmtEur(tp.ca)}</div></div>
+    <div class="kpi"><div class="lbl">Bénéfice / période</div><div class="val ${tp.benefice>=0?'green':''}" style="${tp.benefice<0?'color:var(--red)':''}">${fmtEur(tp.benefice)}</div></div>
+  `;
+
+  renderBilanAnnuel();
+
+  const years = availableYears();
+  [['chartYear1',1],['chartYear2',2]].forEach(([id])=>{
+    const sel = document.getElementById(id);
+    const prev = sel.value || String(years[0]);
+    sel.innerHTML = years.map(y=>`<option value="${y}">${y}</option>`).join('');
+    sel.value = years.includes(Number(prev)) ? prev : String(years[0]);
+  });
+
+  drawCharts();
+}
+
+function drawCharts(){
+  const year1 = Number(document.getElementById('chartYear1').value) || new Date().getFullYear();
+  const year2 = Number(document.getElementById('chartYear2').value) || new Date().getFullYear();
+  const agg1 = monthlyAgg(year1);
+  const agg2 = monthlyAgg(year2);
+  drawGroupedBars(document.getElementById('chartPontesVentes'), MOIS_FR, [
+    { label:'Pontes', color:'#e8a33d', data: agg1.pontesM },
+    { label:'Ventes', color:'#3d78b0', data: agg1.ventesM },
+  ]);
+  drawBars(document.getElementById('chartCA'), MOIS_FR, agg2.caM, '#4c8c4a', v => fmtEur(v));
+}
+
+function renderBilanAnnuel(){
+  const rows = annualBilan();
+  const tbody = document.querySelector('#bilanTable tbody');
+  if(!rows.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">Aucune donnée pour le moment.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(r=>`<tr>
+      <td>${r.year}</td>
+      <td class="num">${fmtEur(r.ca)}</td>
+      <td class="num">${fmtEur(r.couts)}</td>
+      <td class="num">${fmtEur(r.economies)}</td>
+      <td class="num" style="${r.benefice<0?'color:var(--red)':''}">${fmtEur(r.benefice)}</td>
+      <td class="num">${fmtEur(r.valeur)}</td>
+      <td class="num">${fmtEur(r.invest)}</td>
+      <td class="num" style="${r.soldeCumule<0?'color:var(--red)':'color:var(--green)'}">${fmtEur(r.soldeCumule)}</td>
+    </tr>`).join('');
+}
+
+/* ---- lightweight canvas charts (no external deps) ---- */
+function setupCanvas(canvas){
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(rect.width, 280);
+  const h = 230;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return { ctx, w, h };
+}
+function drawGroupedBars(canvas, labels, series){
+  const { ctx, w, h } = setupCanvas(canvas);
+  ctx.clearRect(0,0,w,h);
+  const padL = 38, padB = 26, padT = 14, padR = 8;
+  const chartW = w - padL - padR, chartH = h - padT - padB;
+  const max = Math.max(1, ...series.flatMap(s=>s.data));
+  const n = labels.length;
+  const groupW = chartW / n;
+  const barW = Math.min(16, groupW / (series.length+1.4));
+
+  ctx.strokeStyle = '#ecdfc2'; ctx.lineWidth = 1;
+  ctx.fillStyle = '#8a715a'; ctx.font = '10px Nunito, sans-serif'; ctx.textAlign='right';
+  for(let i=0;i<=4;i++){
+    const y = padT + chartH - (chartH*i/4);
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w-padR, y); ctx.stroke();
+    ctx.fillText(fmtNum(Math.round(max*i/4)), padL-6, y+3);
+  }
+  ctx.textAlign='center';
+  labels.forEach((lab,i)=>{
+    const gx = padL + i*groupW;
+    series.forEach((s,si)=>{
+      const val = s.data[i];
+      const bh = chartH * (val/max);
+      const bx = gx + groupW/2 - (series.length*barW)/2 + si*barW;
+      ctx.fillStyle = s.color;
+      ctx.fillRect(bx, padT+chartH-bh, barW-2, bh);
+    });
+    ctx.fillStyle = '#8a715a';
+    ctx.fillText(lab, gx+groupW/2, h-8);
+  });
+  let lx = padL;
+  series.forEach(s=>{
+    ctx.fillStyle = s.color; ctx.fillRect(lx, 2, 9, 9);
+    ctx.fillStyle = '#4a3728'; ctx.textAlign='left'; ctx.font='11px Nunito, sans-serif';
+    ctx.fillText(s.label, lx+13, 11);
+    lx += ctx.measureText(s.label).width + 34;
+  });
+}
+function drawBars(canvas, labels, data, color, tooltipFmt){
+  const { ctx, w, h } = setupCanvas(canvas);
+  ctx.clearRect(0,0,w,h);
+  const padL = 46, padB = 26, padT = 14, padR = 8;
+  const chartW = w - padL - padR, chartH = h - padT - padB;
+  const max = Math.max(1, ...data);
+  const n = labels.length;
+  const groupW = chartW / n;
+  const barW = Math.min(22, groupW*0.55);
+
+  ctx.strokeStyle = '#ecdfc2'; ctx.lineWidth = 1;
+  ctx.fillStyle = '#8a715a'; ctx.font = '10px Nunito, sans-serif'; ctx.textAlign='right';
+  for(let i=0;i<=4;i++){
+    const y = padT + chartH - (chartH*i/4);
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w-padR, y); ctx.stroke();
+    ctx.fillText(Math.round(max*i/4).toLocaleString('fr-FR'), padL-6, y+3);
+  }
+  ctx.textAlign='center';
+  labels.forEach((lab,i)=>{
+    const gx = padL + i*groupW;
+    const val = data[i];
+    const bh = chartH * (val/max);
+    ctx.fillStyle = color;
+    ctx.fillRect(gx+groupW/2-barW/2, padT+chartH-bh, barW, bh);
+    ctx.fillStyle = '#8a715a';
+    ctx.fillText(lab, gx+groupW/2, h-8);
+  });
+}
+
+document.getElementById('periodStart').addEventListener('change', renderDashboard);
+document.getElementById('periodEnd').addEventListener('change', renderDashboard);
+document.getElementById('periodReset').addEventListener('click', ()=>{
+  document.getElementById('periodStart').value='';
+  document.getElementById('periodEnd').value='';
+  renderDashboard();
+});
+document.getElementById('chartYear1').addEventListener('change', drawCharts);
+document.getElementById('chartYear2').addEventListener('change', drawCharts);
+window.addEventListener('resize', ()=>{
+  if(document.getElementById('view-dashboard').classList.contains('active')) drawCharts();
+});
+
+/* ==================== POULES ==================== */
+const pouleForm = document.getElementById('pouleForm');
+pouleForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  const id = document.getElementById('pouleId').value;
+  const data = {
+    nom: document.getElementById('pouleNom').value.trim(),
+    race: document.getElementById('pouleRace').value.trim(),
+    dateArrivee: document.getElementById('pouleDateArrivee').value,
+    dateNaissance: document.getElementById('pouleDateNaissance').value,
+    prixAchat: document.getElementById('pouleuPrixAchat').value,
+    statut: document.getElementById('pouleStatut').value,
+  };
+  if(!data.nom){ showToast('Le nom / repère est obligatoire'); return; }
+  if(id){
+    const p = state.poules.find(x=>x.id===id);
+    Object.assign(p, data);
+    showToast('Poule modifiée');
+  } else {
+    state.poules.push({ id: uid(), ...data });
+    showToast('Poule ajoutée');
+  }
+  saveState();
+  resetPouleForm();
+  renderAll();
+});
+document.getElementById('pouleCancelBtn').addEventListener('click', resetPouleForm);
+function resetPouleForm(){
+  pouleForm.reset();
+  document.getElementById('pouleId').value = '';
+  document.getElementById('pouleFormTitle').textContent = '➕ Ajouter une poule';
+  document.getElementById('pouleSubmitBtn').textContent = 'Ajouter';
+  document.getElementById('pouleCancelBtn').style.display = 'none';
+}
+function editPoule(id){
+  const p = state.poules.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('pouleId').value = p.id;
+  document.getElementById('pouleNom').value = p.nom||'';
+  document.getElementById('pouleRace').value = p.race||'';
+  document.getElementById('pouleDateArrivee').value = p.dateArrivee||'';
+  document.getElementById('pouleDateNaissance').value = p.dateNaissance||'';
+  document.getElementById('pouleuPrixAchat').value = p.prixAchat||'';
+  document.getElementById('pouleStatut').value = p.statut||'Active';
+  document.getElementById('pouleFormTitle').textContent = '✏️ Modifier la poule';
+  document.getElementById('pouleSubmitBtn').textContent = 'Enregistrer';
+  document.getElementById('pouleCancelBtn').style.display = '';
+  document.getElementById('view-poules').scrollIntoView({behavior:'smooth'});
+}
+function deletePoule(id){
+  if(!confirm('Supprimer cette poule ?')) return;
+  state.poules = state.poules.filter(x=>x.id!==id);
+  saveState();
+  renderAll();
+  showToast('Poule supprimée');
+}
+function statutTag(statut){
+  const cls = statut==='Active' ? 'tag-active' : statut==='Décédée' ? 'tag-decedee' : 'tag-retiree';
+  return `<span class="tag ${cls}">${escapeHtml(statut||'—')}</span>`;
+}
+function renderPoules(){
+  const filterStatut = document.getElementById('pouleFilterStatut').value;
+  let rows = state.poules.slice();
+  if(filterStatut) rows = rows.filter(p=>p.statut===filterStatut);
+  rows.sort((a,b)=>(a.nom||'').localeCompare(b.nom||'','fr'));
+
+  document.getElementById('poulesCount').textContent = `(${rows.length})`;
+  const tbody = document.querySelector('#poulesTable tbody');
+  if(!rows.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Aucune poule enregistrée pour le moment.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(p=>{
+    const s = pouleStats(p);
+    return `<tr>
+      <td>${escapeHtml(p.nom)}</td>
+      <td>${escapeHtml(p.race||'—')}</td>
+      <td>${fmtDate(p.dateArrivee)}</td>
+      <td>${statutTag(p.statut)}</td>
+      <td class="num">${fmtNum(s.pondus)}</td>
+      <td class="row-actions">
+        <button class="btn-outline btn-sm" onclick="editPoule('${p.id}')">✏️</button>
+        <button class="btn-danger btn-sm" onclick="deletePoule('${p.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+document.getElementById('pouleFilterStatut').addEventListener('change', renderPoules);
+
+/* ==================== PONTES ==================== */
+const ponteForm = document.getElementById('ponteForm');
+ponteForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  const id = document.getElementById('ponteId').value;
+  const data = {
+    date: document.getElementById('ponteDate').value,
+    race: document.getElementById('ponteRace').value.trim(),
+    poule: document.getElementById('pontePoule').value.trim(),
+    quantite: document.getElementById('ponteQuantite').value,
+    commentaire: document.getElementById('ponteCommentaire').value.trim(),
+  };
+  if(!data.date || data.quantite===''){ showToast('Date et quantité sont obligatoires'); return; }
+  if(id){
+    const p = state.pontes.find(x=>x.id===id);
+    Object.assign(p, data);
+    showToast('Ponte modifiée');
+  } else {
+    state.pontes.push({ id: uid(), ...data });
+    showToast('Ponte ajoutée');
+  }
+  saveState();
+  resetPonteForm();
+  renderAll();
+});
+document.getElementById('ponteCancelBtn').addEventListener('click', resetPonteForm);
+function resetPonteForm(){
+  ponteForm.reset();
+  document.getElementById('ponteId').value = '';
+  document.getElementById('ponteDate').value = todayISO();
+  document.getElementById('ponteFormTitle').textContent = '➕ Enregistrer une ponte';
+  document.getElementById('ponteSubmitBtn').textContent = 'Ajouter';
+  document.getElementById('ponteCancelBtn').style.display = 'none';
+}
+function editPonte(id){
+  const p = state.pontes.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('ponteId').value = p.id;
+  document.getElementById('ponteDate').value = p.date||'';
+  document.getElementById('ponteRace').value = p.race||'';
+  document.getElementById('pontePoule').value = p.poule||'';
+  document.getElementById('ponteQuantite').value = p.quantite||'';
+  document.getElementById('ponteCommentaire').value = p.commentaire||'';
+  document.getElementById('ponteFormTitle').textContent = '✏️ Modifier la ponte';
+  document.getElementById('ponteSubmitBtn').textContent = 'Enregistrer';
+  document.getElementById('ponteCancelBtn').style.display = '';
+  document.getElementById('view-pontes').scrollIntoView({behavior:'smooth'});
+}
+function deletePonte(id){
+  if(!confirm('Supprimer cette ponte ?')) return;
+  state.pontes = state.pontes.filter(x=>x.id!==id);
+  saveState();
+  renderAll();
+  showToast('Ponte supprimée');
+}
+function renderPonteFilters(){
+  const yearSel = document.getElementById('ponteFilterYear');
+  const raceSel = document.getElementById('ponteFilterRace');
+  const years = availableYears();
+  const prevY = yearSel.value, prevR = raceSel.value;
+  yearSel.innerHTML = '<option value="">Toutes</option>' + years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  raceSel.innerHTML = '<option value="">Toutes</option>' + allRaces().map(r=>`<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
+  yearSel.value = prevY; raceSel.value = prevR;
+}
+function renderPontes(){
+  renderPonteFilters();
+  const year = document.getElementById('ponteFilterYear').value;
+  const race = document.getElementById('ponteFilterRace').value;
+  const from = document.getElementById('ponteFilterFrom').value;
+  const to = document.getElementById('ponteFilterTo').value;
+  let rows = state.pontes.slice();
+  if(year) rows = rows.filter(p=>p.date && String(new Date(p.date+'T00:00:00').getFullYear())===year);
+  if(race) rows = rows.filter(p=>p.race===race);
+  if(from) rows = rows.filter(p=>p.date>=from);
+  if(to) rows = rows.filter(p=>p.date<=to);
+  rows.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+
+  document.getElementById('pontesCount').textContent = `(${rows.length})`;
+  const tbody = document.querySelector('#pontesTable tbody');
+  if(!rows.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">Aucune ponte enregistrée pour cette sélection.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(p=>{
+    const d = p.date ? new Date(p.date+'T00:00:00') : null;
+    return `<tr>
+      <td>${fmtDate(p.date)}</td>
+      <td>${d?d.getFullYear():''}</td>
+      <td>${d?MOIS_FR[d.getMonth()]:''}</td>
+      <td>${escapeHtml(p.race||'—')}</td>
+      <td>${escapeHtml(p.poule||'—')}</td>
+      <td class="num">${fmtNum(p.quantite)}</td>
+      <td>${escapeHtml(p.commentaire||'')}</td>
+      <td class="row-actions">
+        <button class="btn-outline btn-sm" onclick="editPonte('${p.id}')">✏️</button>
+        <button class="btn-danger btn-sm" onclick="deletePonte('${p.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+['ponteFilterYear','ponteFilterRace','ponteFilterFrom','ponteFilterTo'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', renderPontes);
+});
+document.getElementById('ponteFilterReset').addEventListener('click', ()=>{
+  document.getElementById('ponteFilterYear').value='';
+  document.getElementById('ponteFilterRace').value='';
+  document.getElementById('ponteFilterFrom').value='';
+  document.getElementById('ponteFilterTo').value='';
+  renderPontes();
+});
+
+/* ==================== VENTES ==================== */
+const venteForm = document.getElementById('venteForm');
+venteForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  const id = document.getElementById('venteId').value;
+  const data = {
+    date: document.getElementById('venteDate').value,
+    client: document.getElementById('venteClient').value.trim(),
+    race: document.getElementById('venteRace').value.trim(),
+    quantite: document.getElementById('venteQuantite').value,
+    prix: document.getElementById('ventePrix').value,
+    paiement: document.getElementById('ventePaiement').value,
+    commentaire: document.getElementById('venteCommentaire').value.trim(),
+  };
+  if(!data.date || !data.client || data.quantite==='' || data.prix===''){
+    showToast('Date, client, quantité et prix sont obligatoires'); return;
+  }
+  if(id){
+    const v = state.ventes.find(x=>x.id===id);
+    Object.assign(v, data);
+    showToast('Vente modifiée');
+  } else {
+    state.ventes.push({ id: uid(), numero: state.nextVenteNumero++, ...data });
+    showToast('Vente ajoutée — stock mis à jour');
+  }
+  saveState();
+  resetVenteForm();
+  renderAll();
+});
+document.getElementById('venteCancelBtn').addEventListener('click', resetVenteForm);
+function resetVenteForm(){
+  venteForm.reset();
+  document.getElementById('venteId').value = '';
+  document.getElementById('venteDate').value = todayISO();
+  document.getElementById('ventePaiement').value = 'Espèces';
+  document.getElementById('venteFormTitle').textContent = '➕ Enregistrer une vente';
+  document.getElementById('venteSubmitBtn').textContent = 'Ajouter';
+  document.getElementById('venteCancelBtn').style.display = 'none';
+  document.getElementById('venteStockWarn').style.display = 'none';
+}
+function editVente(id){
+  const v = state.ventes.find(x=>x.id===id);
+  if(!v) return;
+  document.getElementById('venteId').value = v.id;
+  document.getElementById('venteDate').value = v.date||'';
+  document.getElementById('venteClient').value = v.client||'';
+  document.getElementById('venteRace').value = v.race||'';
+  document.getElementById('venteQuantite').value = v.quantite||'';
+  document.getElementById('ventePrix').value = v.prix||'';
+  document.getElementById('ventePaiement').value = v.paiement||'Espèces';
+  document.getElementById('venteCommentaire').value = v.commentaire||'';
+  document.getElementById('venteFormTitle').textContent = '✏️ Modifier la vente';
+  document.getElementById('venteSubmitBtn').textContent = 'Enregistrer';
+  document.getElementById('venteCancelBtn').style.display = '';
+  document.getElementById('view-ventes').scrollIntoView({behavior:'smooth'});
+  checkStockWarning();
+}
+function deleteVente(id){
+  if(!confirm('Supprimer cette vente ?')) return;
+  state.ventes = state.ventes.filter(x=>x.id!==id);
+  saveState();
+  renderAll();
+  showToast('Vente supprimée — stock mis à jour');
+}
+function checkStockWarning(){
+  const race = document.getElementById('venteRace').value.trim();
+  const qty = Number(document.getElementById('venteQuantite').value)||0;
+  const editingId = document.getElementById('venteId').value;
+  const warn = document.getElementById('venteStockWarn');
+  if(!race || !qty){ warn.style.display='none'; return; }
+  let dispo = stockDisponiblePourRace(race);
+  if(editingId){
+    const orig = state.ventes.find(x=>x.id===editingId);
+    if(orig && orig.race===race) dispo += Number(orig.quantite)||0;
+  }
+  if(dispo!==null && qty > dispo){
+    warn.textContent = `⚠️ Stock disponible pour « ${race} » : ${fmtNum(dispo)} œufs seulement.`;
+    warn.style.display='';
+  } else {
+    warn.style.display='none';
+  }
+}
+document.getElementById('venteRace').addEventListener('input', checkStockWarning);
+document.getElementById('venteQuantite').addEventListener('input', checkStockWarning);
+
+function renderVenteFilters(){
+  const yearSel = document.getElementById('venteFilterYear');
+  const clientSel = document.getElementById('venteFilterClient');
+  const raceSel = document.getElementById('venteFilterRace');
+  const years = availableYears();
+  const prevY = yearSel.value, prevC = clientSel.value, prevR = raceSel.value;
+  yearSel.innerHTML = '<option value="">Toutes</option>' + years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  clientSel.innerHTML = '<option value="">Tous</option>' + allClientNames().map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  raceSel.innerHTML = '<option value="">Toutes</option>' + allRaces().map(r=>`<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
+  yearSel.value = prevY; clientSel.value = prevC; raceSel.value = prevR;
+}
+function renderVentes(){
+  renderVenteFilters();
+  const year = document.getElementById('venteFilterYear').value;
+  const client = document.getElementById('venteFilterClient').value;
+  const race = document.getElementById('venteFilterRace').value;
+  const from = document.getElementById('venteFilterFrom').value;
+  const to = document.getElementById('venteFilterTo').value;
+  let rows = state.ventes.slice();
+  if(year) rows = rows.filter(v=>v.date && String(new Date(v.date+'T00:00:00').getFullYear())===year);
+  if(client) rows = rows.filter(v=>v.client===client);
+  if(race) rows = rows.filter(v=>v.race===race);
+  if(from) rows = rows.filter(v=>v.date>=from);
+  if(to) rows = rows.filter(v=>v.date<=to);
+  rows.sort((a,b)=> (b.date||'').localeCompare(a.date||'') || (b.numero-a.numero));
+
+  document.getElementById('ventesCount').textContent = `(${rows.length})`;
+  const tbody = document.querySelector('#ventesTable tbody');
+  if(!rows.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="10">Aucune vente enregistrée pour cette sélection.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(v=>`<tr>
+      <td class="num">${v.numero}</td>
+      <td>${fmtDate(v.date)}</td>
+      <td>${escapeHtml(v.client)}</td>
+      <td>${escapeHtml(v.race||'—')}</td>
+      <td class="num">${fmtNum(v.quantite)}</td>
+      <td class="num">${fmtEur(v.prix)}</td>
+      <td class="num">${fmtEur(venteTotal(v))}</td>
+      <td>${escapeHtml(v.paiement||'')}</td>
+      <td>${escapeHtml(v.commentaire||'')}</td>
+      <td class="row-actions">
+        <button class="btn-outline btn-sm" onclick="editVente('${v.id}')">✏️</button>
+        <button class="btn-danger btn-sm" onclick="deleteVente('${v.id}')">🗑️</button>
+      </td>
+    </tr>`).join('');
+}
+['venteFilterYear','venteFilterClient','venteFilterRace','venteFilterFrom','venteFilterTo'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', renderVentes);
+});
+document.getElementById('venteFilterReset').addEventListener('click', ()=>{
+  document.getElementById('venteFilterYear').value='';
+  document.getElementById('venteFilterClient').value='';
+  document.getElementById('venteFilterRace').value='';
+  document.getElementById('venteFilterFrom').value='';
+  document.getElementById('venteFilterTo').value='';
+  renderVentes();
+});
+
+/* ==================== CLIENTS ==================== */
+function renderClients(){
+  const rows = clientsRanking();
+  document.getElementById('clientsCount').textContent = `(${rows.length})`;
+  const tbody = document.querySelector('#clientsTable tbody');
+  if(!rows.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">Aucun client pour le moment — ajoute une vente pour commencer.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(c=>`<tr>
+      <td class="${c.rang===1?'rank1':''}">${c.rang===1?'🥇 ':''}${c.rang}</td>
+      <td>${escapeHtml(c.name)}</td>
+      <td class="num">${fmtNum(c.achats)}</td>
+      <td class="num">${fmtNum(c.nb)}</td>
+      <td class="num">${fmtEur(c.ca)}</td>
+      <td class="num">${fmtEur(c.prixMoyen)}</td>
+      <td>${fmtDate(c.derniereVente)}</td>
+      <td class="num">${(c.partCA*100).toLocaleString('fr-FR',{maximumFractionDigits:1})}%</td>
+    </tr>`).join('');
+}
+
+/* ==================== STOCK ==================== */
+document.addEventListener('change', e=>{
+  if(e.target.matches('[data-stockprix]')){
+    const race = e.target.dataset.stockprix;
+    const val = e.target.value;
+    if(val==='') delete state.stockPrix[race];
+    else state.stockPrix[race] = val;
+    saveState();
+    renderStock();
+    renderDashboard();
+  }
+});
+function renderStock(){
+  const rows = stockParRace();
+  document.getElementById('stockCount').textContent = `(${rows.length})`;
+  const tbody = document.querySelector('#stockTable tbody');
+  if(!rows.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="9">Aucune donnée de stock pour le moment.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(r=>`<tr>
+      <td>${escapeHtml(r.race)}</td>
+      <td class="num">${fmtNum(r.pondus)}</td>
+      <td class="num">${fmtNum(r.vendus)}</td>
+      <td class="num">${fmtNum(r.consommes)}</td>
+      <td class="num">${fmtNum(r.disponible)}</td>
+      <td class="num"><input type="number" step="0.01" min="0" style="width:90px;text-align:right" data-stockprix="${escapeHtml(r.race)}" value="${r.prixVente}"></td>
+      <td class="num">${r.valeur===null?'—':fmtEur(r.valeur)}</td>
+      <td>${fmtDate(r.dernierePonte)}</td>
+      <td>${fmtDate(r.derniereVente)}</td>
+    </tr>`).join('');
+}
+
+/* ==================== COÛTS ==================== */
+const coutForm = document.getElementById('coutForm');
+coutForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  const id = document.getElementById('coutId').value;
+  const data = {
+    date: document.getElementById('coutDate').value,
+    categorie: document.getElementById('coutCategorie').value,
+    montant: document.getElementById('coutMontant').value,
+    commentaire: document.getElementById('coutCommentaire').value.trim(),
+  };
+  if(!data.date || data.montant===''){ showToast('Date et montant sont obligatoires'); return; }
+  if(id){
+    const c = state.couts.find(x=>x.id===id);
+    Object.assign(c, data);
+    showToast('Coût modifié');
+  } else {
+    state.couts.push({ id: uid(), ...data });
+    showToast('Coût ajouté');
+  }
+  saveState();
+  resetCoutForm();
+  renderAll();
+});
+document.getElementById('coutCancelBtn').addEventListener('click', resetCoutForm);
+function resetCoutForm(){
+  coutForm.reset();
+  document.getElementById('coutId').value = '';
+  document.getElementById('coutDate').value = todayISO();
+  document.getElementById('coutFormTitle').textContent = '➕ Enregistrer un coût';
+  document.getElementById('coutSubmitBtn').textContent = 'Ajouter';
+  document.getElementById('coutCancelBtn').style.display = 'none';
+}
+function editCout(id){
+  const c = state.couts.find(x=>x.id===id);
+  if(!c) return;
+  document.getElementById('coutId').value = c.id;
+  document.getElementById('coutDate').value = c.date||'';
+  document.getElementById('coutCategorie').value = c.categorie||'Nourriture';
+  document.getElementById('coutMontant').value = c.montant||'';
+  document.getElementById('coutCommentaire').value = c.commentaire||'';
+  document.getElementById('coutFormTitle').textContent = '✏️ Modifier le coût';
+  document.getElementById('coutSubmitBtn').textContent = 'Enregistrer';
+  document.getElementById('coutCancelBtn').style.display = '';
+  document.getElementById('view-couts').scrollIntoView({behavior:'smooth'});
+}
+function deleteCout(id){
+  if(!confirm('Supprimer ce coût ?')) return;
+  state.couts = state.couts.filter(x=>x.id!==id);
+  saveState();
+  renderAll();
+  showToast('Coût supprimé');
+}
+function renderCoutFilters(){
+  const yearSel = document.getElementById('coutFilterYear');
+  const prevY = yearSel.value;
+  yearSel.innerHTML = '<option value="">Toutes</option>' + availableYears().map(y=>`<option value="${y}">${y}</option>`).join('');
+  yearSel.value = prevY;
+}
+function renderCouts(){
+  renderCoutFilters();
+  const year = document.getElementById('coutFilterYear').value;
+  const categorie = document.getElementById('coutFilterCategorie').value;
+  const from = document.getElementById('coutFilterFrom').value;
+  const to = document.getElementById('coutFilterTo').value;
+  let rows = state.couts.slice();
+  if(year) rows = rows.filter(c=>c.date && String(new Date(c.date+'T00:00:00').getFullYear())===year);
+  if(categorie) rows = rows.filter(c=>c.categorie===categorie);
+  if(from) rows = rows.filter(c=>c.date>=from);
+  if(to) rows = rows.filter(c=>c.date<=to);
+  rows.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+
+  const total = rows.reduce((s,c)=>s+(Number(c.montant)||0),0);
+  document.getElementById('coutsCount').textContent = `(${rows.length} — total ${fmtEur(total)})`;
+  const tbody = document.querySelector('#coutsTable tbody');
+  if(!rows.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">Aucun coût enregistré pour cette sélection.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(c=>`<tr>
+      <td>${fmtDate(c.date)}</td>
+      <td>${escapeHtml(c.categorie||'—')}</td>
+      <td class="num">${fmtEur(c.montant)}</td>
+      <td>${escapeHtml(c.commentaire||'')}</td>
+      <td class="row-actions">
+        <button class="btn-outline btn-sm" onclick="editCout('${c.id}')">✏️</button>
+        <button class="btn-danger btn-sm" onclick="deleteCout('${c.id}')">🗑️</button>
+      </td>
+    </tr>`).join('');
+}
+['coutFilterYear','coutFilterCategorie','coutFilterFrom','coutFilterTo'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', renderCouts);
+});
+document.getElementById('coutFilterReset').addEventListener('click', ()=>{
+  document.getElementById('coutFilterYear').value='';
+  document.getElementById('coutFilterCategorie').value='';
+  document.getElementById('coutFilterFrom').value='';
+  document.getElementById('coutFilterTo').value='';
+  renderCouts();
+});
+
+/* ==================== CONSOMMATION PERSONNELLE ==================== */
+const consoForm = document.getElementById('consoForm');
+consoForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  const id = document.getElementById('consoId').value;
+  const data = {
+    date: document.getElementById('consoDate').value,
+    race: document.getElementById('consoRace').value.trim(),
+    quantite: document.getElementById('consoQuantite').value,
+    prix: document.getElementById('consoPrix').value,
+    commentaire: document.getElementById('consoCommentaire').value.trim(),
+  };
+  if(!data.date || data.quantite==='' || data.prix===''){
+    showToast('Date, quantité et prix estimatif sont obligatoires'); return;
+  }
+  if(id){
+    const c = state.consommations.find(x=>x.id===id);
+    Object.assign(c, data);
+    showToast('Consommation modifiée');
+  } else {
+    state.consommations.push({ id: uid(), ...data });
+    showToast('Consommation ajoutée — stock mis à jour');
+  }
+  saveState();
+  resetConsoForm();
+  renderAll();
+});
+document.getElementById('consoCancelBtn').addEventListener('click', resetConsoForm);
+function resetConsoForm(){
+  consoForm.reset();
+  document.getElementById('consoId').value = '';
+  document.getElementById('consoDate').value = todayISO();
+  document.getElementById('consoFormTitle').textContent = '➕ Enregistrer une consommation';
+  document.getElementById('consoSubmitBtn').textContent = 'Ajouter';
+  document.getElementById('consoCancelBtn').style.display = 'none';
+  document.getElementById('consoStockWarn').style.display = 'none';
+  document.getElementById('consoEconomiePreview').textContent = '';
+}
+function editConso(id){
+  const c = state.consommations.find(x=>x.id===id);
+  if(!c) return;
+  document.getElementById('consoId').value = c.id;
+  document.getElementById('consoDate').value = c.date||'';
+  document.getElementById('consoRace').value = c.race||'';
+  document.getElementById('consoQuantite').value = c.quantite||'';
+  document.getElementById('consoPrix').value = c.prix||'';
+  document.getElementById('consoCommentaire').value = c.commentaire||'';
+  document.getElementById('consoFormTitle').textContent = '✏️ Modifier la consommation';
+  document.getElementById('consoSubmitBtn').textContent = 'Enregistrer';
+  document.getElementById('consoCancelBtn').style.display = '';
+  document.getElementById('view-conso').scrollIntoView({behavior:'smooth'});
+  checkConsoStockWarning();
+  updateConsoEconomiePreview();
+}
+function deleteConso(id){
+  if(!confirm('Supprimer cette consommation ?')) return;
+  state.consommations = state.consommations.filter(x=>x.id!==id);
+  saveState();
+  renderAll();
+  showToast('Consommation supprimée — stock mis à jour');
+}
+function checkConsoStockWarning(){
+  const race = document.getElementById('consoRace').value.trim();
+  const qty = Number(document.getElementById('consoQuantite').value)||0;
+  const editingId = document.getElementById('consoId').value;
+  const warn = document.getElementById('consoStockWarn');
+  if(!race || !qty){ warn.style.display='none'; return; }
+  let dispo = stockDisponiblePourRace(race);
+  if(editingId){
+    const orig = state.consommations.find(x=>x.id===editingId);
+    if(orig && orig.race===race) dispo += Number(orig.quantite)||0;
+  }
+  if(dispo!==null && qty > dispo){
+    warn.textContent = `⚠️ Stock disponible pour « ${race} » : ${fmtNum(dispo)} œufs seulement.`;
+    warn.style.display='';
+  } else {
+    warn.style.display='none';
+  }
+}
+function updateConsoEconomiePreview(){
+  const qty = Number(document.getElementById('consoQuantite').value)||0;
+  const prix = Number(document.getElementById('consoPrix').value)||0;
+  const preview = document.getElementById('consoEconomiePreview');
+  if(qty && prix){
+    preview.textContent = `💚 Économie estimée : ${fmtEur(qty*prix)}`;
+  } else {
+    preview.textContent = '';
+  }
+}
+document.getElementById('consoRace').addEventListener('input', ()=>{
+  const race = document.getElementById('consoRace').value.trim();
+  const prixField = document.getElementById('consoPrix');
+  if(race && state.stockPrix[race] && !prixField.value){
+    prixField.value = state.stockPrix[race];
+  }
+  checkConsoStockWarning();
+  updateConsoEconomiePreview();
+});
+document.getElementById('consoQuantite').addEventListener('input', ()=>{ checkConsoStockWarning(); updateConsoEconomiePreview(); });
+document.getElementById('consoPrix').addEventListener('input', updateConsoEconomiePreview);
+
+function renderConsoFilters(){
+  const yearSel = document.getElementById('consoFilterYear');
+  const raceSel = document.getElementById('consoFilterRace');
+  const prevY = yearSel.value, prevR = raceSel.value;
+  yearSel.innerHTML = '<option value="">Toutes</option>' + availableYears().map(y=>`<option value="${y}">${y}</option>`).join('');
+  raceSel.innerHTML = '<option value="">Toutes</option>' + allRaces().map(r=>`<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
+  yearSel.value = prevY; raceSel.value = prevR;
+}
+function renderConsommations(){
+  renderConsoFilters();
+  const year = document.getElementById('consoFilterYear').value;
+  const race = document.getElementById('consoFilterRace').value;
+  const from = document.getElementById('consoFilterFrom').value;
+  const to = document.getElementById('consoFilterTo').value;
+  let rows = state.consommations.slice();
+  if(year) rows = rows.filter(c=>c.date && String(new Date(c.date+'T00:00:00').getFullYear())===year);
+  if(race) rows = rows.filter(c=>c.race===race);
+  if(from) rows = rows.filter(c=>c.date>=from);
+  if(to) rows = rows.filter(c=>c.date<=to);
+  rows.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+
+  const totalEco = rows.reduce((s,c)=>s+consoEconomie(c),0);
+  document.getElementById('consosCount').textContent = `(${rows.length} — économie ${fmtEur(totalEco)})`;
+  const tbody = document.querySelector('#consosTable tbody');
+  if(!rows.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">Aucune consommation enregistrée pour cette sélection.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(c=>`<tr>
+      <td>${fmtDate(c.date)}</td>
+      <td>${escapeHtml(c.race||'—')}</td>
+      <td class="num">${fmtNum(c.quantite)}</td>
+      <td class="num">${fmtEur(c.prix)}</td>
+      <td class="num">${fmtEur(consoEconomie(c))}</td>
+      <td>${escapeHtml(c.commentaire||'')}</td>
+      <td class="row-actions">
+        <button class="btn-outline btn-sm" onclick="editConso('${c.id}')">✏️</button>
+        <button class="btn-danger btn-sm" onclick="deleteConso('${c.id}')">🗑️</button>
+      </td>
+    </tr>`).join('');
+}
+['consoFilterYear','consoFilterRace','consoFilterFrom','consoFilterTo'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', renderConsommations);
+});
+document.getElementById('consoFilterReset').addEventListener('click', ()=>{
+  document.getElementById('consoFilterYear').value='';
+  document.getElementById('consoFilterRace').value='';
+  document.getElementById('consoFilterFrom').value='';
+  document.getElementById('consoFilterTo').value='';
+  renderConsommations();
+});
+
+/* ==================== INVESTISSEMENTS ==================== */
+const investForm = document.getElementById('investForm');
+investForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  const id = document.getElementById('investId').value;
+  const data = {
+    date: document.getElementById('investDate').value,
+    categorie: document.getElementById('investCategorie').value,
+    libelle: document.getElementById('investLibelle').value.trim(),
+    montant: document.getElementById('investMontant').value,
+    commentaire: document.getElementById('investCommentaire').value.trim(),
+  };
+  if(!data.date || data.montant===''){ showToast('Date et montant sont obligatoires'); return; }
+  if(id){
+    const inv = state.investissements.find(x=>x.id===id);
+    Object.assign(inv, data);
+    showToast('Investissement modifié');
+  } else {
+    state.investissements.push({ id: uid(), ...data });
+    showToast('Investissement ajouté');
+  }
+  saveState();
+  resetInvestForm();
+  renderAll();
+});
+document.getElementById('investCancelBtn').addEventListener('click', resetInvestForm);
+function resetInvestForm(){
+  investForm.reset();
+  document.getElementById('investId').value = '';
+  document.getElementById('investDate').value = todayISO();
+  document.getElementById('investFormTitle').textContent = '➕ Enregistrer un investissement';
+  document.getElementById('investSubmitBtn').textContent = 'Ajouter';
+  document.getElementById('investCancelBtn').style.display = 'none';
+}
+function editInvest(id){
+  const inv = state.investissements.find(x=>x.id===id);
+  if(!inv) return;
+  document.getElementById('investId').value = inv.id;
+  document.getElementById('investDate').value = inv.date||'';
+  document.getElementById('investCategorie').value = inv.categorie||'Poulailler';
+  document.getElementById('investLibelle').value = inv.libelle||'';
+  document.getElementById('investMontant').value = inv.montant||'';
+  document.getElementById('investCommentaire').value = inv.commentaire||'';
+  document.getElementById('investFormTitle').textContent = '✏️ Modifier l\'investissement';
+  document.getElementById('investSubmitBtn').textContent = 'Enregistrer';
+  document.getElementById('investCancelBtn').style.display = '';
+  document.getElementById('view-investissements').scrollIntoView({behavior:'smooth'});
+}
+function deleteInvest(id){
+  if(!confirm('Supprimer cet investissement ?')) return;
+  state.investissements = state.investissements.filter(x=>x.id!==id);
+  saveState();
+  renderAll();
+  showToast('Investissement supprimé');
+}
+function renderInvestFilters(){
+  const yearSel = document.getElementById('investFilterYear');
+  const prevY = yearSel.value;
+  yearSel.innerHTML = '<option value="">Toutes</option>' + availableYears().map(y=>`<option value="${y}">${y}</option>`).join('');
+  yearSel.value = prevY;
+}
+function renderInvestissements(){
+  renderInvestFilters();
+  const year = document.getElementById('investFilterYear').value;
+  const categorie = document.getElementById('investFilterCategorie').value;
+  let rows = state.investissements.slice();
+  if(year) rows = rows.filter(i=>i.date && String(new Date(i.date+'T00:00:00').getFullYear())===year);
+  if(categorie) rows = rows.filter(i=>i.categorie===categorie);
+  rows.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+
+  const total = rows.reduce((s,i)=>s+(Number(i.montant)||0),0);
+  document.getElementById('investsCount').textContent = `(${rows.length} — total ${fmtEur(total)})`;
+  const tbody = document.querySelector('#investsTable tbody');
+  if(!rows.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Aucun investissement enregistré pour cette sélection.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(i=>`<tr>
+      <td>${fmtDate(i.date)}</td>
+      <td>${escapeHtml(i.categorie||'—')}</td>
+      <td>${escapeHtml(i.libelle||'')}</td>
+      <td class="num">${fmtEur(i.montant)}</td>
+      <td>${escapeHtml(i.commentaire||'')}</td>
+      <td class="row-actions">
+        <button class="btn-outline btn-sm" onclick="editInvest('${i.id}')">✏️</button>
+        <button class="btn-danger btn-sm" onclick="deleteInvest('${i.id}')">🗑️</button>
+      </td>
+    </tr>`).join('');
+}
+['investFilterYear','investFilterCategorie'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', renderInvestissements);
+});
+document.getElementById('investFilterReset').addEventListener('click', ()=>{
+  document.getElementById('investFilterYear').value='';
+  document.getElementById('investFilterCategorie').value='';
+  renderInvestissements();
+});
+
+/* ==================== BACKUP ==================== */
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `poulailler-sauvegarde-${todayISO()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Sauvegarde exportée');
+});
+document.getElementById('importBtn').addEventListener('click', ()=>{
+  document.getElementById('importFile').click();
+});
+document.getElementById('importFile').addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      if(!data || !Array.isArray(data.poules) || !Array.isArray(data.pontes) || !Array.isArray(data.ventes)){
+        throw new Error('format invalide');
+      }
+      if(!confirm('Importer cette sauvegarde va remplacer toutes les données actuelles. Continuer ?')) return;
+      state = Object.assign(defaultState(), data);
+      saveState();
+      renderAll();
+      showToast('Sauvegarde importée');
+    }catch(err){
+      alert("Fichier invalide : impossible d'importer cette sauvegarde.");
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(!confirm('Cette action supprime définitivement toutes les données (poules, pontes, ventes). Continuer ?')) return;
+  if(!confirm('Confirme une dernière fois : tout effacer ?')) return;
+  state = defaultState();
+  saveState();
+  renderAll();
+  showToast('Toutes les données ont été effacées');
+});
+function toCsv(rows, headers){
+  const esc = v => `"${String(v??'').replace(/"/g,'""')}"`;
+  const lines = [headers.map(h=>esc(h.label)).join(';')];
+  rows.forEach(r=> lines.push(headers.map(h=>esc(h.get(r))).join(';')));
+  return lines.join('\r\n');
+}
+function downloadCsv(content, filename){
+  const blob = new Blob(['﻿'+content], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+document.getElementById('exportCsvPontes').addEventListener('click', ()=>{
+  const csv = toCsv(state.pontes, [
+    {label:'Date', get:r=>fmtDate(r.date)},
+    {label:'Race', get:r=>r.race},
+    {label:'Poule', get:r=>r.poule},
+    {label:"Quantité", get:r=>r.quantite},
+    {label:'Commentaire', get:r=>r.commentaire},
+  ]);
+  downloadCsv(csv, `pontes-${todayISO()}.csv`);
+});
+document.getElementById('exportCsvVentes').addEventListener('click', ()=>{
+  const csv = toCsv(state.ventes, [
+    {label:'N°', get:r=>r.numero},
+    {label:'Date', get:r=>fmtDate(r.date)},
+    {label:'Client', get:r=>r.client},
+    {label:'Race', get:r=>r.race},
+    {label:'Quantité', get:r=>r.quantite},
+    {label:'Prix/œuf', get:r=>r.prix},
+    {label:'Total', get:r=>venteTotal(r).toFixed(2)},
+    {label:'Paiement', get:r=>r.paiement},
+    {label:'Commentaire', get:r=>r.commentaire},
+  ]);
+  downloadCsv(csv, `ventes-${todayISO()}.csv`);
+});
+document.getElementById('exportCsvCouts').addEventListener('click', ()=>{
+  const csv = toCsv(state.couts, [
+    {label:'Date', get:r=>fmtDate(r.date)},
+    {label:'Catégorie', get:r=>r.categorie},
+    {label:'Montant', get:r=>r.montant},
+    {label:'Commentaire', get:r=>r.commentaire},
+  ]);
+  downloadCsv(csv, `couts-${todayISO()}.csv`);
+});
+document.getElementById('exportCsvConso').addEventListener('click', ()=>{
+  const csv = toCsv(state.consommations, [
+    {label:'Date', get:r=>fmtDate(r.date)},
+    {label:'Race', get:r=>r.race},
+    {label:'Quantité', get:r=>r.quantite},
+    {label:'Prix estimé', get:r=>r.prix},
+    {label:'Économie', get:r=>consoEconomie(r).toFixed(2)},
+    {label:'Commentaire', get:r=>r.commentaire},
+  ]);
+  downloadCsv(csv, `consommation-${todayISO()}.csv`);
+});
+document.getElementById('exportCsvInvest').addEventListener('click', ()=>{
+  const csv = toCsv(state.investissements, [
+    {label:'Date', get:r=>fmtDate(r.date)},
+    {label:'Catégorie', get:r=>r.categorie},
+    {label:'Désignation', get:r=>r.libelle},
+    {label:'Montant', get:r=>r.montant},
+    {label:'Commentaire', get:r=>r.commentaire},
+  ]);
+  downloadCsv(csv, `investissements-${todayISO()}.csv`);
+});
+
+/* ==================== RENDER ALL ==================== */
+function renderAll(){
+  renderDatalists();
+  renderPoules();
+  renderPontes();
+  renderVentes();
+  renderClients();
+  renderStock();
+  renderCouts();
+  renderConsommations();
+  renderInvestissements();
+  renderDashboard();
+}
+
+/* ==================== INIT ==================== */
+document.getElementById('ponteDate').value = todayISO();
+document.getElementById('venteDate').value = todayISO();
+document.getElementById('coutDate').value = todayISO();
+document.getElementById('consoDate').value = todayISO();
+document.getElementById('investDate').value = todayISO();
+renderAll();
+
+/* ==================== PWA ==================== */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBtn').style.display = '';
+});
+document.getElementById('installBtn').addEventListener('click', async ()=>{
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('installBtn').style.display = 'none';
+});
+</script>
+</body>
+</html>
