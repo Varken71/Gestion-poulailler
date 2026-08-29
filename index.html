@@ -184,7 +184,7 @@ canvas.chart{width:100%;height:230px;display:block}
     <div class="kpis" id="kpiGrid"></div>
 
     <div class="card">
-      <h2>💰 Rentabilité du cheptel <span class="hint">valeur créée = ventes + économies − coûts</span></h2>
+      <h2>💰 Rentabilité du cheptel <span class="hint">valeur créée = ventes + économies �?coûts</span></h2>
       <div class="kpis" id="kpiRentaGrid"></div>
     </div>
 
@@ -236,7 +236,7 @@ canvas.chart{width:100%;height:230px;display:block}
         1. Renseigne tes poules et leur race dans l'onglet <b>Poules</b>.<br>
         2. À chaque ponte, ajoute une ligne dans <b>Pontes</b> : date, race/poule et quantité.<br>
         3. À chaque vente, ajoute une ligne dans <b>Ventes</b> : date, client, quantité et prix par œuf.<br>
-        4. Le <b>stock</b> se calcule automatiquement (pontes − ventes − consommation) et chaque vente ou consommation le déduit aussitôt.<br>
+        4. Le <b>stock</b> se calcule automatiquement (pontes �?ventes �?consommation) et chaque vente ou consommation le déduit aussitôt.<br>
         5. L'onglet <b>Clients</b> classe automatiquement les acheteurs par quantité et chiffre d'affaires.<br>
         6. Renseigne tes dépenses dans <b>Coûts</b> et tes investissements matériel dans <b>Investissements</b>.<br>
         7. L'onglet <b>Consommation</b> te permet de retirer du stock les œufs que tu manges toi-même, en valorisant l'économie réalisée.<br>
@@ -249,7 +249,7 @@ canvas.chart{width:100%;height:230px;display:block}
   <!-- ============ POULES ============ -->
   <section class="view" id="view-poules">
     <div class="card">
-      <h2 id="pouleFormTitle">➕ Ajouter une poule</h2>
+      <h2 id="pouleFormTitle">�?Ajouter une poule</h2>
       <form id="pouleForm">
         <input type="hidden" id="pouleId">
         <div class="form-row">
@@ -257,7 +257,7 @@ canvas.chart{width:100%;height:230px;display:block}
           <div class="field grow"><label>Race</label><input type="text" id="pouleRace" list="raceList" placeholder="Ex : Sussex"></div>
           <div class="field"><label>Date d'arrivée</label><input type="date" id="pouleDateArrivee"></div>
           <div class="field"><label>Date de naissance</label><input type="date" id="pouleDateNaissance"></div>
-          <div class="field"><label>Prix d'achat (€)</label><input type="number" id="pouleuPrixAchat" step="0.01" min="0"></div>
+          <div class="field"><label>Prix d'achat (�?</label><input type="number" id="pouleuPrixAchat" step="0.01" min="0"></div>
           <div class="field"><label>Statut</label>
             <select id="pouleStatut">
               <option>Active</option><option>Retirée</option><option>Décédée</option>
@@ -292,7 +292,7 @@ canvas.chart{width:100%;height:230px;display:block}
   <!-- ============ PONTES ============ -->
   <section class="view" id="view-pontes">
     <div class="card">
-      <h2 id="ponteFormTitle">➕ Enregistrer une ponte</h2>
+      <h2 id="ponteFormTitle">�?Enregistrer une ponte</h2>
       <form id="ponteForm">
         <input type="hidden" id="ponteId">
         <div class="form-row">
@@ -331,7 +331,7 @@ canvas.chart{width:100%;height:230px;display:block}
   <!-- ============ VENTES ============ -->
   <section class="view" id="view-ventes">
     <div class="card">
-      <h2 id="venteFormTitle">➕ Enregistrer une vente</h2>
+      <h2 id="venteFormTitle">�?Enregistrer une vente</h2>
       <form id="venteForm">
         <input type="hidden" id="venteId">
         <div class="form-row">
@@ -339,7 +339,7 @@ canvas.chart{width:100%;height:230px;display:block}
           <div class="field grow"><label>Client *</label><input type="text" id="venteClient" list="clientList" required></div>
           <div class="field"><label>Race</label><input type="text" id="venteRace" list="raceList"></div>
           <div class="field"><label>Quantité d'œufs *</label><input type="number" id="venteQuantite" min="0" step="1" required></div>
-          <div class="field"><label>Prix / œuf (€) *</label><input type="number" id="ventePrix" min="0" step="0.01" required></div>
+          <div class="field"><label>Prix / œuf (�? *</label><input type="number" id="ventePrix" min="0" step="0.01" required></div>
           <div class="field"><label>Paiement</label>
             <select id="ventePaiement"><option>Espèces</option><option>Virement</option><option>Autre</option></select>
           </div>
@@ -377,11 +377,11 @@ canvas.chart{width:100%;height:230px;display:block}
   <section class="view" id="view-clients">
     <div class="card">
       <h2>👥 Classement des clients <span class="hint" id="clientsCount"></span></h2>
-      <div class="footer-note" style="margin-bottom:10px">Le classement se calcule automatiquement à partir des ventes enregistrées — aucune saisie nécessaire ici.</div>
+      <div class="footer-note" style="margin-bottom:10px">Le classement se calcule automatiquement à partir des ventes enregistrées �?aucune saisie nécessaire ici.</div>
       <div class="table-wrap"><table id="clientsTable">
         <thead><tr>
           <th>Rang</th><th>Client</th><th class="num">Œufs achetés</th><th class="num">Nb ventes</th>
-          <th class="num">CA total (€)</th><th class="num">Prix moyen (€)</th><th>Dernière vente</th><th class="num">Part du CA</th>
+          <th class="num">CA total (�?</th><th class="num">Prix moyen (�?</th><th>Dernière vente</th><th class="num">Part du CA</th>
         </tr></thead>
         <tbody></tbody>
       </table></div>
@@ -396,7 +396,7 @@ canvas.chart{width:100%;height:230px;display:block}
       <div class="table-wrap"><table id="stockTable">
         <thead><tr>
           <th>Race</th><th class="num">Œufs pondus</th><th class="num">Œufs vendus</th><th class="num">Œufs consommés</th><th class="num">Stock disponible</th>
-          <th class="num">Prix vente/œuf (€)</th><th class="num">Valeur du stock (€)</th><th>Dernière ponte</th><th>Dernière vente</th>
+          <th class="num">Prix vente/œuf (�?</th><th class="num">Valeur du stock (�?</th><th>Dernière ponte</th><th>Dernière vente</th>
         </tr></thead>
         <tbody></tbody>
       </table></div>
@@ -406,7 +406,7 @@ canvas.chart{width:100%;height:230px;display:block}
   <!-- ============ COÛTS ============ -->
   <section class="view" id="view-couts">
     <div class="card">
-      <h2 id="coutFormTitle">➕ Enregistrer un coût</h2>
+      <h2 id="coutFormTitle">�?Enregistrer un coût</h2>
       <form id="coutForm">
         <input type="hidden" id="coutId">
         <div class="form-row">
@@ -417,7 +417,7 @@ canvas.chart{width:100%;height:230px;display:block}
               <option>Médicaments</option><option>Matériel</option><option>Eau/Électricité</option><option>Autre</option>
             </select>
           </div>
-          <div class="field"><label>Montant (€) *</label><input type="number" id="coutMontant" min="0" step="0.01" required></div>
+          <div class="field"><label>Montant (�? *</label><input type="number" id="coutMontant" min="0" step="0.01" required></div>
           <div class="field grow"><label>Commentaire</label><input type="text" id="coutCommentaire"></div>
           <div class="form-actions">
             <button type="button" class="btn-outline btn-sm" id="coutCancelBtn" style="display:none">Annuler</button>
@@ -451,14 +451,14 @@ canvas.chart{width:100%;height:230px;display:block}
   <!-- ============ CONSOMMATION PERSONNELLE ============ -->
   <section class="view" id="view-conso">
     <div class="card">
-      <h2 id="consoFormTitle">➕ Enregistrer une consommation</h2>
+      <h2 id="consoFormTitle">�?Enregistrer une consommation</h2>
       <form id="consoForm">
         <input type="hidden" id="consoId">
         <div class="form-row">
           <div class="field"><label>Date *</label><input type="date" id="consoDate" required></div>
           <div class="field"><label>Race</label><input type="text" id="consoRace" list="raceList"></div>
           <div class="field"><label>Quantité consommée *</label><input type="number" id="consoQuantite" min="0" step="1" required></div>
-          <div class="field"><label>Prix estimatif/œuf (€) *</label><input type="number" id="consoPrix" min="0" step="0.01" required></div>
+          <div class="field"><label>Prix estimatif/œuf (�? *</label><input type="number" id="consoPrix" min="0" step="0.01" required></div>
           <div class="field grow"><label>Commentaire</label><input type="text" id="consoCommentaire"></div>
           <div class="form-actions">
             <button type="button" class="btn-outline btn-sm" id="consoCancelBtn" style="display:none">Annuler</button>
@@ -472,7 +472,7 @@ canvas.chart{width:100%;height:230px;display:block}
 
     <div class="card">
       <h2>🏠 Historique de consommation personnelle <span class="hint" id="consosCount"></span></h2>
-      <div class="footer-note" style="margin-bottom:10px">Les œufs consommés sont retirés du stock, comme une vente, mais sans mouvement d'argent réel — l'économie réalisée est estimée avec le prix indiqué.</div>
+      <div class="footer-note" style="margin-bottom:10px">Les œufs consommés sont retirés du stock, comme une vente, mais sans mouvement d'argent réel �?l'économie réalisée est estimée avec le prix indiqué.</div>
       <div class="filters">
         <div class="field"><label>Année</label><select id="consoFilterYear"><option value="">Toutes</option></select></div>
         <div class="field"><label>Race</label><select id="consoFilterRace"><option value="">Toutes</option></select></div>
@@ -493,7 +493,7 @@ canvas.chart{width:100%;height:230px;display:block}
   <!-- ============ INVESTISSEMENTS ============ -->
   <section class="view" id="view-investissements">
     <div class="card">
-      <h2 id="investFormTitle">➕ Enregistrer un investissement</h2>
+      <h2 id="investFormTitle">�?Enregistrer un investissement</h2>
       <form id="investForm">
         <input type="hidden" id="investId">
         <div class="form-row">
@@ -505,7 +505,7 @@ canvas.chart{width:100%;height:230px;display:block}
             </select>
           </div>
           <div class="field grow"><label>Désignation</label><input type="text" id="investLibelle" placeholder="Ex : Poulailler 6 places"></div>
-          <div class="field"><label>Montant (€) *</label><input type="number" id="investMontant" min="0" step="0.01" required></div>
+          <div class="field"><label>Montant (�? *</label><input type="number" id="investMontant" min="0" step="0.01" required></div>
           <div class="field grow"><label>Commentaire</label><input type="text" id="investCommentaire"></div>
           <div class="form-actions">
             <button type="button" class="btn-outline btn-sm" id="investCancelBtn" style="display:none">Annuler</button>
@@ -555,7 +555,7 @@ canvas.chart{width:100%;height:230px;display:block}
         <button class="btn-outline" id="exportCsvInvest">Exporter Investissements (CSV)</button>
       </div>
       <div class="form-row" style="margin-top:22px">
-        <button class="btn-danger" id="resetBtn">🗑️ Réinitialiser toutes les données</button>
+        <button class="btn-danger" id="resetBtn">🗑�?Réinitialiser toutes les données</button>
       </div>
     </div>
   </section>
@@ -611,7 +611,7 @@ function fmtNum(n){
 }
 function fmtEur(n){
   n = Number(n)||0;
-  return n.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+  return n.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2}) + ' �?;
 }
 function fmtDate(iso){
   if(!iso) return '';
@@ -823,7 +823,7 @@ function renderDashboard(){
     <div class="kpi"><div class="lbl">Valeur créée</div><div class="val orange">${fmtEur(r.valeur)}</div></div>
     <div class="kpi"><div class="lbl">Investissements matériel</div><div class="val blue">${fmtEur(r.invest)}</div></div>
     <div class="kpi"><div class="lbl">Solde de rentabilité</div><div class="val ${r.solde>=0?'green':''}" style="${r.solde<0?'color:var(--red)':''}">${fmtEur(r.solde)}</div></div>
-    <div class="kpi"><div class="lbl">Taux de rentabilité</div><div class="val orange">${r.taux===null?'—':r.taux.toLocaleString('fr-FR',{maximumFractionDigits:1})+'%'}</div></div>
+    <div class="kpi"><div class="lbl">Taux de rentabilité</div><div class="val orange">${r.taux===null?'�?:r.taux.toLocaleString('fr-FR',{maximumFractionDigits:1})+'%'}</div></div>
   `;
 
   const from = document.getElementById('periodStart').value;
@@ -1002,7 +1002,7 @@ document.getElementById('pouleCancelBtn').addEventListener('click', resetPouleFo
 function resetPouleForm(){
   pouleForm.reset();
   document.getElementById('pouleId').value = '';
-  document.getElementById('pouleFormTitle').textContent = '➕ Ajouter une poule';
+  document.getElementById('pouleFormTitle').textContent = '�?Ajouter une poule';
   document.getElementById('pouleSubmitBtn').textContent = 'Ajouter';
   document.getElementById('pouleCancelBtn').style.display = 'none';
 }
@@ -1030,7 +1030,7 @@ function deletePoule(id){
 }
 function statutTag(statut){
   const cls = statut==='Active' ? 'tag-active' : statut==='Décédée' ? 'tag-decedee' : 'tag-retiree';
-  return `<span class="tag ${cls}">${escapeHtml(statut||'—')}</span>`;
+  return `<span class="tag ${cls}">${escapeHtml(statut||'�?)}</span>`;
 }
 function renderPoules(){
   const filterStatut = document.getElementById('pouleFilterStatut').value;
@@ -1048,13 +1048,13 @@ function renderPoules(){
     const s = pouleStats(p);
     return `<tr>
       <td>${escapeHtml(p.nom)}</td>
-      <td>${escapeHtml(p.race||'—')}</td>
+      <td>${escapeHtml(p.race||'�?)}</td>
       <td>${fmtDate(p.dateArrivee)}</td>
       <td>${statutTag(p.statut)}</td>
       <td class="num">${fmtNum(s.pondus)}</td>
       <td class="row-actions">
         <button class="btn-outline btn-sm" onclick="editPoule('${p.id}')">✏️</button>
-        <button class="btn-danger btn-sm" onclick="deletePoule('${p.id}')">🗑️</button>
+        <button class="btn-danger btn-sm" onclick="deletePoule('${p.id}')">🗑�?/button>
       </td>
     </tr>`;
   }).join('');
@@ -1091,7 +1091,7 @@ function resetPonteForm(){
   ponteForm.reset();
   document.getElementById('ponteId').value = '';
   document.getElementById('ponteDate').value = todayISO();
-  document.getElementById('ponteFormTitle').textContent = '➕ Enregistrer une ponte';
+  document.getElementById('ponteFormTitle').textContent = '�?Enregistrer une ponte';
   document.getElementById('ponteSubmitBtn').textContent = 'Ajouter';
   document.getElementById('ponteCancelBtn').style.display = 'none';
 }
@@ -1150,13 +1150,13 @@ function renderPontes(){
       <td>${fmtDate(p.date)}</td>
       <td>${d?d.getFullYear():''}</td>
       <td>${d?MOIS_FR[d.getMonth()]:''}</td>
-      <td>${escapeHtml(p.race||'—')}</td>
-      <td>${escapeHtml(p.poule||'—')}</td>
+      <td>${escapeHtml(p.race||'�?)}</td>
+      <td>${escapeHtml(p.poule||'�?)}</td>
       <td class="num">${fmtNum(p.quantite)}</td>
       <td>${escapeHtml(p.commentaire||'')}</td>
       <td class="row-actions">
         <button class="btn-outline btn-sm" onclick="editPonte('${p.id}')">✏️</button>
-        <button class="btn-danger btn-sm" onclick="deletePonte('${p.id}')">🗑️</button>
+        <button class="btn-danger btn-sm" onclick="deletePonte('${p.id}')">🗑�?/button>
       </td>
     </tr>`;
   }).join('');
@@ -1195,7 +1195,7 @@ venteForm.addEventListener('submit', e=>{
     showToast('Vente modifiée');
   } else {
     state.ventes.push({ id: uid(), numero: state.nextVenteNumero++, ...data });
-    showToast('Vente ajoutée — stock mis à jour');
+    showToast('Vente ajoutée �?stock mis à jour');
   }
   saveState();
   resetVenteForm();
@@ -1207,7 +1207,7 @@ function resetVenteForm(){
   document.getElementById('venteId').value = '';
   document.getElementById('venteDate').value = todayISO();
   document.getElementById('ventePaiement').value = 'Espèces';
-  document.getElementById('venteFormTitle').textContent = '➕ Enregistrer une vente';
+  document.getElementById('venteFormTitle').textContent = '�?Enregistrer une vente';
   document.getElementById('venteSubmitBtn').textContent = 'Ajouter';
   document.getElementById('venteCancelBtn').style.display = 'none';
   document.getElementById('venteStockWarn').style.display = 'none';
@@ -1234,7 +1234,7 @@ function deleteVente(id){
   state.ventes = state.ventes.filter(x=>x.id!==id);
   saveState();
   renderAll();
-  showToast('Vente supprimée — stock mis à jour');
+  showToast('Vente supprimée �?stock mis à jour');
 }
 function checkStockWarning(){
   const race = document.getElementById('venteRace').value.trim();
@@ -1293,7 +1293,7 @@ function renderVentes(){
       <td class="num">${v.numero}</td>
       <td>${fmtDate(v.date)}</td>
       <td>${escapeHtml(v.client)}</td>
-      <td>${escapeHtml(v.race||'—')}</td>
+      <td>${escapeHtml(v.race||'�?)}</td>
       <td class="num">${fmtNum(v.quantite)}</td>
       <td class="num">${fmtEur(v.prix)}</td>
       <td class="num">${fmtEur(venteTotal(v))}</td>
@@ -1301,7 +1301,7 @@ function renderVentes(){
       <td>${escapeHtml(v.commentaire||'')}</td>
       <td class="row-actions">
         <button class="btn-outline btn-sm" onclick="editVente('${v.id}')">✏️</button>
-        <button class="btn-danger btn-sm" onclick="deleteVente('${v.id}')">🗑️</button>
+        <button class="btn-danger btn-sm" onclick="deleteVente('${v.id}')">🗑�?/button>
       </td>
     </tr>`).join('');
 }
@@ -1323,7 +1323,7 @@ function renderClients(){
   document.getElementById('clientsCount').textContent = `(${rows.length})`;
   const tbody = document.querySelector('#clientsTable tbody');
   if(!rows.length){
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">Aucun client pour le moment — ajoute une vente pour commencer.</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">Aucun client pour le moment �?ajoute une vente pour commencer.</td></tr>`;
     return;
   }
   tbody.innerHTML = rows.map(c=>`<tr>
@@ -1365,7 +1365,7 @@ function renderStock(){
       <td class="num">${fmtNum(r.consommes)}</td>
       <td class="num">${fmtNum(r.disponible)}</td>
       <td class="num"><input type="number" step="0.01" min="0" style="width:90px;text-align:right" data-stockprix="${escapeHtml(r.race)}" value="${r.prixVente}"></td>
-      <td class="num">${r.valeur===null?'—':fmtEur(r.valeur)}</td>
+      <td class="num">${r.valeur===null?'�?:fmtEur(r.valeur)}</td>
       <td>${fmtDate(r.dernierePonte)}</td>
       <td>${fmtDate(r.derniereVente)}</td>
     </tr>`).join('');
@@ -1400,7 +1400,7 @@ function resetCoutForm(){
   coutForm.reset();
   document.getElementById('coutId').value = '';
   document.getElementById('coutDate').value = todayISO();
-  document.getElementById('coutFormTitle').textContent = '➕ Enregistrer un coût';
+  document.getElementById('coutFormTitle').textContent = '�?Enregistrer un coût';
   document.getElementById('coutSubmitBtn').textContent = 'Ajouter';
   document.getElementById('coutCancelBtn').style.display = 'none';
 }
@@ -1444,7 +1444,7 @@ function renderCouts(){
   rows.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
 
   const total = rows.reduce((s,c)=>s+(Number(c.montant)||0),0);
-  document.getElementById('coutsCount').textContent = `(${rows.length} — total ${fmtEur(total)})`;
+  document.getElementById('coutsCount').textContent = `(${rows.length} �?total ${fmtEur(total)})`;
   const tbody = document.querySelector('#coutsTable tbody');
   if(!rows.length){
     tbody.innerHTML = `<tr class="empty-row"><td colspan="5">Aucun coût enregistré pour cette sélection.</td></tr>`;
@@ -1452,12 +1452,12 @@ function renderCouts(){
   }
   tbody.innerHTML = rows.map(c=>`<tr>
       <td>${fmtDate(c.date)}</td>
-      <td>${escapeHtml(c.categorie||'—')}</td>
+      <td>${escapeHtml(c.categorie||'�?)}</td>
       <td class="num">${fmtEur(c.montant)}</td>
       <td>${escapeHtml(c.commentaire||'')}</td>
       <td class="row-actions">
         <button class="btn-outline btn-sm" onclick="editCout('${c.id}')">✏️</button>
-        <button class="btn-danger btn-sm" onclick="deleteCout('${c.id}')">🗑️</button>
+        <button class="btn-danger btn-sm" onclick="deleteCout('${c.id}')">🗑�?/button>
       </td>
     </tr>`).join('');
 }
@@ -1493,7 +1493,7 @@ consoForm.addEventListener('submit', e=>{
     showToast('Consommation modifiée');
   } else {
     state.consommations.push({ id: uid(), ...data });
-    showToast('Consommation ajoutée — stock mis à jour');
+    showToast('Consommation ajoutée �?stock mis à jour');
   }
   saveState();
   resetConsoForm();
@@ -1504,7 +1504,7 @@ function resetConsoForm(){
   consoForm.reset();
   document.getElementById('consoId').value = '';
   document.getElementById('consoDate').value = todayISO();
-  document.getElementById('consoFormTitle').textContent = '➕ Enregistrer une consommation';
+  document.getElementById('consoFormTitle').textContent = '�?Enregistrer une consommation';
   document.getElementById('consoSubmitBtn').textContent = 'Ajouter';
   document.getElementById('consoCancelBtn').style.display = 'none';
   document.getElementById('consoStockWarn').style.display = 'none';
@@ -1531,7 +1531,7 @@ function deleteConso(id){
   state.consommations = state.consommations.filter(x=>x.id!==id);
   saveState();
   renderAll();
-  showToast('Consommation supprimée — stock mis à jour');
+  showToast('Consommation supprimée �?stock mis à jour');
 }
 function checkConsoStockWarning(){
   const race = document.getElementById('consoRace').value.trim();
@@ -1595,7 +1595,7 @@ function renderConsommations(){
   rows.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
 
   const totalEco = rows.reduce((s,c)=>s+consoEconomie(c),0);
-  document.getElementById('consosCount').textContent = `(${rows.length} — économie ${fmtEur(totalEco)})`;
+  document.getElementById('consosCount').textContent = `(${rows.length} �?économie ${fmtEur(totalEco)})`;
   const tbody = document.querySelector('#consosTable tbody');
   if(!rows.length){
     tbody.innerHTML = `<tr class="empty-row"><td colspan="7">Aucune consommation enregistrée pour cette sélection.</td></tr>`;
@@ -1603,14 +1603,14 @@ function renderConsommations(){
   }
   tbody.innerHTML = rows.map(c=>`<tr>
       <td>${fmtDate(c.date)}</td>
-      <td>${escapeHtml(c.race||'—')}</td>
+      <td>${escapeHtml(c.race||'�?)}</td>
       <td class="num">${fmtNum(c.quantite)}</td>
       <td class="num">${fmtEur(c.prix)}</td>
       <td class="num">${fmtEur(consoEconomie(c))}</td>
       <td>${escapeHtml(c.commentaire||'')}</td>
       <td class="row-actions">
         <button class="btn-outline btn-sm" onclick="editConso('${c.id}')">✏️</button>
-        <button class="btn-danger btn-sm" onclick="deleteConso('${c.id}')">🗑️</button>
+        <button class="btn-danger btn-sm" onclick="deleteConso('${c.id}')">🗑�?/button>
       </td>
     </tr>`).join('');
 }
@@ -1655,7 +1655,7 @@ function resetInvestForm(){
   investForm.reset();
   document.getElementById('investId').value = '';
   document.getElementById('investDate').value = todayISO();
-  document.getElementById('investFormTitle').textContent = '➕ Enregistrer un investissement';
+  document.getElementById('investFormTitle').textContent = '�?Enregistrer un investissement';
   document.getElementById('investSubmitBtn').textContent = 'Ajouter';
   document.getElementById('investCancelBtn').style.display = 'none';
 }
@@ -1696,7 +1696,7 @@ function renderInvestissements(){
   rows.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
 
   const total = rows.reduce((s,i)=>s+(Number(i.montant)||0),0);
-  document.getElementById('investsCount').textContent = `(${rows.length} — total ${fmtEur(total)})`;
+  document.getElementById('investsCount').textContent = `(${rows.length} �?total ${fmtEur(total)})`;
   const tbody = document.querySelector('#investsTable tbody');
   if(!rows.length){
     tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Aucun investissement enregistré pour cette sélection.</td></tr>`;
@@ -1704,13 +1704,13 @@ function renderInvestissements(){
   }
   tbody.innerHTML = rows.map(i=>`<tr>
       <td>${fmtDate(i.date)}</td>
-      <td>${escapeHtml(i.categorie||'—')}</td>
+      <td>${escapeHtml(i.categorie||'�?)}</td>
       <td>${escapeHtml(i.libelle||'')}</td>
       <td class="num">${fmtEur(i.montant)}</td>
       <td>${escapeHtml(i.commentaire||'')}</td>
       <td class="row-actions">
         <button class="btn-outline btn-sm" onclick="editInvest('${i.id}')">✏️</button>
-        <button class="btn-danger btn-sm" onclick="deleteInvest('${i.id}')">🗑️</button>
+        <button class="btn-danger btn-sm" onclick="deleteInvest('${i.id}')">🗑�?/button>
       </td>
     </tr>`).join('');
 }
@@ -1774,7 +1774,7 @@ function toCsv(rows, headers){
   return lines.join('\r\n');
 }
 function downloadCsv(content, filename){
-  const blob = new Blob(['﻿'+content], {type:'text/csv;charset=utf-8'});
+  const blob = new Blob(['�?+content], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = filename;
@@ -1877,6 +1877,32 @@ document.getElementById('installBtn').addEventListener('click', async ()=>{
   deferredPrompt = null;
   document.getElementById('installBtn').style.display = 'none';
 });
+</script>
+
+<!-- On importe Firebase en tant que module -->
+<script type="module">
+  // 1. Importation des outils Firebase depuis les serveurs de Google
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // 2. Ta configuration unique (�� copier depuis la console Firebase)
+  const firebaseConfig = {
+  apiKey: "AIzaSyAL2swfjINwZuPHoP8MtP4IGNTSgqlx_1I",
+  authDomain: "mon-petit-marche-local.firebaseapp.com",
+  projectId: "mon-petit-marche-local",
+  storageBucket: "mon-petit-marche-local.firebasestorage.app",
+  messagingSenderId: "795086227185",
+  appId: "1:795086227185:web:3ab385a4d94921bdbe4b50"
+};
+
+  // 3. Initialisation de la connexion
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  console.log("Connect�� �� la base de donn��es en ligne !");
+  
+  // Rendre 'db' accessible globalement si besoin pour tes autres fonctions
+  window.db = db;
 </script>
 </body>
 </html>
